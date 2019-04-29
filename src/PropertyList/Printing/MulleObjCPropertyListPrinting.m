@@ -1,5 +1,5 @@
 //
-//  NSObject+PropertyListPrinting.h
+//  NSObject+PropertyListPrinting.m
 //  MulleObjCStandardFoundation
 //
 //  Copyright (c) 2009 Nat! - Mulle kybernetiK.
@@ -33,27 +33,63 @@
 //  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
 //
-#import "MulleObjCFoundationCore.h"
+#import "MulleObjCPropertyListPrinting.h"
 
+// other files in this library
 #import "_MulleObjCDataStream.h"
 
+// std-c and dependencies
 
 
 
-extern int    _MulleObjCPropertyListUTF8DataIndentationPerLevel;  //   = 1;
-extern char   _MulleObjCPropertyListUTF8DataIndentationCharacter; //  = '\t';
-extern NSDictionary  *_MulleObjCPropertyListCanonicalPrintingLocale;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wprotocol"
+#pragma clang diagnostic ignored "-Wobjc-root-class"
 
 
-@interface NSObject ( PropertyListPrinting)
+PROTOCOLCLASS_IMPLEMENTATION( MulleObjCPropertyListPrinting)
 
-- (void) propertyListUTF8DataToStream:(id <_MulleObjCOutputDataStream>) handle;
+int            _MulleObjCPropertyListUTF8DataIndentationPerLevel  = 1;
+char           _MulleObjCPropertyListUTF8DataIndentationCharacter = '\t';
+NSDictionary  *_MulleObjCPropertyListCanonicalPrintingLocale;
+
 
 - (void) propertyListUTF8DataToStream:(id <_MulleObjCOutputDataStream>) handle
-                               indent:(unsigned int) indent;
+{
+   [self propertyListUTF8DataToStream:handle
+                                  indent:0];
+}
 
-- (NSData *) propertyListUTF8DataWithIndent:(unsigned int) indent;
 
-- (NSData *) propertyListUTF8DataIndentation:(unsigned int) level;
+- (void) propertyListUTF8DataToStream:(id <_MulleObjCOutputDataStream>) handle
+                               indent:(NSUInteger) indent;
+{
+   NSData   *data;
 
-@end
+   data = [self propertyListUTF8DataWithIndent:indent];
+   [handle writeData:data];
+}
+
+
+- (NSData *) propertyListUTF8DataWithIndent:(NSUInteger) indent
+{
+   return( [[(NSObject *) self description] dataUsingEncoding:NSUTF8StringEncoding]);
+}
+
+
+- (NSData *) propertyListUTF8DataIndentation:(NSUInteger) level
+{
+   NSMutableData   *data;
+   unsigned int    n;
+
+   n = level * _MulleObjCPropertyListUTF8DataIndentationPerLevel;
+   data = [NSMutableData dataWithLength:n];
+   memset( [data mutableBytes],
+            _MulleObjCPropertyListUTF8DataIndentationCharacter,
+            n);
+   return( data);
+}
+
+PROTOCOLCLASS_END()
+
+#pragma clang diagnostic pop

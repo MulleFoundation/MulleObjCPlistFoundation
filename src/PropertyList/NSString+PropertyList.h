@@ -1,9 +1,9 @@
 //
-//  NSDate+PropertyListPrinting.m
+//  NSString+NSPropertyList.h
 //  MulleObjCStandardFoundation
 //
-//  Copyright (c) 2009 Nat! - Mulle kybernetiK.
-//  Copyright (c) 2009 Codeon GmbH.
+//  Copyright (c) 2019 Nat! - Mulle kybernetiK.
+//  Copyright (c) 2019 Codeon GmbH.
 //  All rights reserved.
 //
 //
@@ -33,34 +33,11 @@
 //  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
 //
-
-#import "NSDate+PropertyListPrinting.h"
-
-// other files in this library
-#import "NSString+PropertyListPrinting.h"
-
-// other libraries of MulleObjCStandardFoundation
-#import "MulleObjCFoundationLocale.h"
-
-// std-c and dependencies
+#import "MulleObjCFoundationString.h"
 
 
-NSString      *_MulleObjCPropertyListCanonicalPrintingCalendarFormat =  @"%Y.%m.%d %H:%M:%S:%F";
-// always GMT!
-NSTimeZone    *_MulleObjCPropertyListCanonicalPrintingTimeZone;
+@interface NSString( PropertyList)
 
-
-@implementation NSDate( PropertyListPrinting)
-
-
-- (NSData *) propertyListUTF8DataWithIndent:(NSUInteger) indent
-{
-   NSString   *s;
-
-   s = [self descriptionWithCalendarFormat:_MulleObjCPropertyListCanonicalPrintingCalendarFormat
-                                  timeZone:_MulleObjCPropertyListCanonicalPrintingTimeZone
-                                    locale:_MulleObjCPropertyListCanonicalPrintingLocale];
-   return( [s propertyListUTF8DataWithIndent:indent]);
-}
+- (id) propertyList;
 
 @end

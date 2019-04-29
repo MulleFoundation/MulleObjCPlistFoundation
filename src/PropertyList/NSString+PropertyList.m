@@ -1,9 +1,9 @@
 //
-//  NSObject+PropertyListPrinting.m
+//  NSString+NSPropertyList.h
 //  MulleObjCStandardFoundation
 //
-//  Copyright (c) 2009 Nat! - Mulle kybernetiK.
-//  Copyright (c) 2009 Codeon GmbH.
+//  Copyright (c) 2019 Nat! - Mulle kybernetiK.
+//  Copyright (c) 2019 Codeon GmbH.
 //  All rights reserved.
 //
 //
@@ -33,55 +33,33 @@
 //  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
 //
-#import "NSObject+PropertyListPrinting.h"
+#import "NSString+PropertyList.h"
 
-// other files in this library
-#import "_MulleObjCDataStream.h"
+#import "MulleObjCFoundationData.h"
 
-// std-c and dependencies
+#import "NSException.h"
 
-
-@implementation NSObject( PropertyListPrinting)
-
-int    _MulleObjCPropertyListUTF8DataIndentationPerLevel  = 1;
-char   _MulleObjCPropertyListUTF8DataIndentationCharacter = '\t';
-NSDictionary  *_MulleObjCPropertyListCanonicalPrintingLocale;
+#import "NSPropertyListSerialization.h"
 
 
-- (void) propertyListUTF8DataToStream:(id <_MulleObjCOutputDataStream>) handle
+@implementation NSString( PropertyList)
+
+- (id) propertyList
 {
-   [self propertyListUTF8DataToStream:handle
-                                  indent:0];
-}
+   NSData     *data;
+   id         plist;
+   NSString   *errorDescription;
 
+   data  = [self dataUsingEncoding:NSUTF8StringEncoding];
+   plist = [NSPropertyListSerialization propertyListFromData:data
+                                            mutabilityOption:0
+                                                      format:NULL
+                                            errorDescription:&errorDescription];
+   if( ! plist)
+      [NSException raise:NSParseErrorException
+                  format:@"invalid plist: %@", errorDescription ? errorDescription : @"???"];
 
-- (void) propertyListUTF8DataToStream:(id <_MulleObjCOutputDataStream>) handle
-                               indent:(unsigned int) indent;
-{
-   NSData   *data;
-
-   data = [self propertyListUTF8DataWithIndent:indent];
-   [handle writeData:data];
-}
-
-
-- (NSData *) propertyListUTF8DataWithIndent:(unsigned int) indent
-{
-   return( [[self description] dataUsingEncoding:NSUTF8StringEncoding]);
-}
-
-
-- (NSData *) propertyListUTF8DataIndentation:(unsigned int) level
-{
-   NSMutableData   *data;
-   unsigned int    n;
-
-   n = level * _MulleObjCPropertyListUTF8DataIndentationPerLevel;
-   data = [NSMutableData dataWithLength:n];
-   memset( [data mutableBytes],
-            _MulleObjCPropertyListUTF8DataIndentationCharacter,
-            n);
-   return( data);
+   return( plist);
 }
 
 @end

@@ -1,5 +1,5 @@
 //
-//  NSDate+PropertyListPrinting.m
+//  NSObject+PropertyListPrinting.h
 //  MulleObjCStandardFoundation
 //
 //  Copyright (c) 2009 Nat! - Mulle kybernetiK.
@@ -33,34 +33,31 @@
 //  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
 //
+#import "MulleObjCFoundationCore.h"
+#import "MulleObjCFoundationContainer.h"
+#import "MulleObjCFoundationData.h"
+#import "MulleObjCFoundationString.h"
 
-#import "NSDate+PropertyListPrinting.h"
-
-// other files in this library
-#import "NSString+PropertyListPrinting.h"
-
-// other libraries of MulleObjCStandardFoundation
-#import "MulleObjCFoundationLocale.h"
-
-// std-c and dependencies
+#import "_MulleObjCDataStream.h"
 
 
-NSString      *_MulleObjCPropertyListCanonicalPrintingCalendarFormat =  @"%Y.%m.%d %H:%M:%S:%F";
-// always GMT!
-NSTimeZone    *_MulleObjCPropertyListCanonicalPrintingTimeZone;
+extern int    _MulleObjCPropertyListUTF8DataIndentationPerLevel;  //   = 1;
+extern char   _MulleObjCPropertyListUTF8DataIndentationCharacter; //  = '\t';
+extern NSDictionary  *_MulleObjCPropertyListCanonicalPrintingLocale;
 
 
-@implementation NSDate( PropertyListPrinting)
+PROTOCOLCLASS_INTERFACE( MulleObjCPropertyListPrinting, NSObject)
 
+// you need to implement some, but not all ... use the source
 
-- (NSData *) propertyListUTF8DataWithIndent:(NSUInteger) indent
-{
-   NSString   *s;
+@optional
+- (void) propertyListUTF8DataToStream:(id <_MulleObjCOutputDataStream>) handle
+                               indent:(NSUInteger) indent;
+- (void) propertyListUTF8DataToStream:(id <_MulleObjCOutputDataStream>) handle;
 
-   s = [self descriptionWithCalendarFormat:_MulleObjCPropertyListCanonicalPrintingCalendarFormat
-                                  timeZone:_MulleObjCPropertyListCanonicalPrintingTimeZone
-                                    locale:_MulleObjCPropertyListCanonicalPrintingLocale];
-   return( [s propertyListUTF8DataWithIndent:indent]);
-}
+- (NSData *) propertyListUTF8DataWithIndent:(NSUInteger) indent;
 
-@end
+// provide indentation NSData (not plist data)
+- (NSData *) propertyListUTF8DataIndentation:(NSUInteger) level;
+
+PROTOCOLCLASS_END()
