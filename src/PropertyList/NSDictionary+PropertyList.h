@@ -1,9 +1,9 @@
 //
-//  NSDictionary+PropertyListParsing.h
+//  NSString+NSPropertyList.h
 //  MulleObjCStandardFoundation
 //
-//  Copyright (c) 2009 Nat! - Mulle kybernetiK.
-//  Copyright (c) 2009 Codeon GmbH.
+//  Copyright (c) 2019 Nat! - Mulle kybernetiK.
+//  Copyright (c) 2019 Codeon GmbH.
 //  All rights reserved.
 //
 //
@@ -33,8 +33,11 @@
 //  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
 //
+#import "MulleObjCFoundationContainer.h"
 
-#import "NSObject+PropertyListParsing.h"
 
-NSDictionary   *_MulleObjCNewDictionaryFromPropertyListWithReader( _MulleObjCPropertyListReader *reader,
-                                                                   NSString *initialKey);
+@interface NSDictionary( PropertyList)
+
+- (NSString *) descriptionInStringsFileFormat;
+
+@end

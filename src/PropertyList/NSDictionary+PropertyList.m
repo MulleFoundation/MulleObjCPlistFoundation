@@ -1,9 +1,9 @@
 //
-//  NSDictionary+PropertyListParsing.h
+//  NSString+NSPropertyList.h
 //  MulleObjCStandardFoundation
 //
-//  Copyright (c) 2009 Nat! - Mulle kybernetiK.
-//  Copyright (c) 2009 Codeon GmbH.
+//  Copyright (c) 2019 Nat! - Mulle kybernetiK.
+//  Copyright (c) 2019 Codeon GmbH.
 //  All rights reserved.
 //
 //
@@ -33,8 +33,54 @@
 //  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 //  POSSIBILITY OF SUCH DAMAGE.
 //
+#import "NSDictionary+PropertyList.h"
 
-#import "NSObject+PropertyListParsing.h"
+#import "MulleObjCFoundationString.h"
 
-NSDictionary   *_MulleObjCNewDictionaryFromPropertyListWithReader( _MulleObjCPropertyListReader *reader,
-                                                                   NSString *initialKey);
+#import "MulleObjCPropertyListPrinting.h"
+
+
+
+@interface NSObject( _NS)
+
+- (BOOL) __isNSString;
+
+@end
+
+
+@implementation NSDictionary( PropertyList)
+
+//
+// this is sadly quite a different algorithm, then propertylist encoding.
+// Tries to stay as compatible as possible to what Apple does, though I
+// would code it differently...
+//
+- (NSString *) descriptionInStringsFileFormat
+{
+   NSMutableString   *s;
+   id                key, value;
+   NSArray           *keys;
+   NSString          *valueDescription;
+
+   s    = [NSMutableString string];
+   keys = [[self allKeys] sortedArrayUsingSelector:@selector( mulleCompareDescription:)];
+   for( key in keys)
+   {
+      value = [self objectForKey:key];
+      if( ! [value conformsToProtocol:@protocol( MulleObjCPropertyListPrinting)])
+         return( nil);
+      if( [value __isNSString])
+         valueDescription = [value mulleQuotedString];
+      else
+         valueDescription = [value description];  // sic will print unquoted ... lol
+
+      [s appendString:[[key description] mulleQuotedString]];
+      [s appendString:@" = "];
+      [s appendString:valueDescription];
+      [s appendString:@";\n"];
+   }
+
+   return( s);
+}
+
+@end
