@@ -5,9 +5,7 @@
 //  Created by Nat! on 19.04.16.
 //  Copyright © 2016 Mulle kybernetiK. All rights reserved.
 //
-
-
-#import <MulleObjCStandardFoundation/MulleObjCStandardFoundation.h>
+#import <MulleObjCPlistFoundation/MulleObjCPlistFoundation.h>
 
 
 static void  code_decode( id value)
@@ -25,7 +23,7 @@ static void  code_decode( id value)
       data = [NSPropertyListSerialization dataFromPropertyList:value
                                                         format:MullePropertyListJSONFormat
                                               errorDescription:NULL];
-      printf( "%.*s\n", (int) [data length], [data bytes]);
+      printf( "%.*s\n", (int) [data length], (char *) [data bytes]);
    }
    @catch( NSException *exception)
    {

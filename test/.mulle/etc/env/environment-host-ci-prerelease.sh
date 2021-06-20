@@ -383,9 +383,9 @@ export MULLE_SPRINTF_NODETYPE="git"
 
 
 #
-# mulle-sprintf url: ${MULLE_SPRINTF_URL:-https://github.com/mulle-c/mulle-sprintf/archive/${MULLE_TAG}.tar.gz}
+# mulle-sprintf url: ${MULLE_SPRINTF_URL:-https://github.com/mulle-core/mulle-sprintf/archive/${MULLE_TAG}.tar.gz}
 #
-export MULLE_SPRINTF_URL="https://github.com/mulle-c/mulle-sprintf.git"
+export MULLE_SPRINTF_URL="https://github.com/mulle-core/mulle-sprintf.git"
 
 
 #
@@ -410,5 +410,23 @@ export MULLE_OBJC_CONTAINER_FOUNDATION_URL="https://github.com/MulleFoundation/M
 # MulleObjCContainerFoundation branch: ${MULLE_OBJC_CONTAINER_FOUNDATION_BRANCH}
 #
 export MULLE_OBJC_CONTAINER_FOUNDATION_BRANCH="prerelease"
+
+
+#
+# MulleObjCPlistFoundation nodetype: ${MULLE_OBJC_PLIST_FOUNDATION_NODETYPE:-tar}
+#
+export MULLE_OBJC_PLIST_FOUNDATION_NODETYPE="git"
+
+
+#
+# MulleObjCPlistFoundation url: ${MULLE_OBJC_PLIST_FOUNDATION_URL:-https://github.com/MulleFoundation/MulleObjCPlistFoundation/archive/${MULLE_TAG}.tar.gz}
+#
+export MULLE_OBJC_PLIST_FOUNDATION_URL="https://github.com/MulleFoundation/MulleObjCPlistFoundation.git"
+
+
+#
+# MulleObjCPlistFoundation branch: ${MULLE_OBJC_PLIST_FOUNDATION_BRANCH}
+#
+export MULLE_OBJC_PLIST_FOUNDATION_BRANCH="prerelease"
 
 

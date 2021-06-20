@@ -1,4 +1,22 @@
 #
+# MulleObjCStandardFoundation nodetype: ${MULLE_OBJC_STANDARD_FOUNDATION_NODETYPE:-tar}
+#
+export MULLE_OBJC_STANDARD_FOUNDATION_NODETYPE="git"
+
+
+#
+# MulleObjCStandardFoundation url: ${MULLE_OBJC_STANDARD_FOUNDATION_URL:-https://github.com/MulleFoundation/MulleObjCStandardFoundation/archive/${MULLE_TAG}.tar.gz}
+#
+export MULLE_OBJC_STANDARD_FOUNDATION_URL="https://github.com/MulleFoundation/MulleObjCStandardFoundation.git"
+
+
+#
+# MulleObjCStandardFoundation branch: ${MULLE_OBJC_STANDARD_FOUNDATION_BRANCH}
+#
+export MULLE_OBJC_STANDARD_FOUNDATION_BRANCH="prerelease"
+
+
+#
 # MulleObjCValueFoundation nodetype: ${MULLE_OBJC_VALUE_FOUNDATION_NODETYPE:-tar}
 #
 export MULLE_OBJC_VALUE_FOUNDATION_NODETYPE="git"
@@ -329,9 +347,9 @@ export MULLE_SPRINTF_NODETYPE="git"
 
 
 #
-# mulle-sprintf url: ${MULLE_SPRINTF_URL:-https://github.com/mulle-c/mulle-sprintf/archive/${MULLE_TAG}.tar.gz}
+# mulle-sprintf url: ${MULLE_SPRINTF_URL:-https://github.com/mulle-core/mulle-sprintf/archive/${MULLE_TAG}.tar.gz}
 #
-export MULLE_SPRINTF_URL="https://github.com/mulle-c/mulle-sprintf.git"
+export MULLE_SPRINTF_URL="https://github.com/mulle-core/mulle-sprintf.git"
 
 
 #

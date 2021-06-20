@@ -1,7 +1,7 @@
 #
 #
 #
-export PROJECT_NAME="MulleObjCStandardFoundation"
+export PROJECT_NAME="MulleObjCPlistFoundation"
 
 
 #

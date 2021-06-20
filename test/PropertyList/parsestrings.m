@@ -6,7 +6,7 @@
 //  Copyright © 2016 Mulle kybernetiK. All rights reserved.
 //
 #ifdef __MULLE_OBJC__
-# import <MulleObjCStandardFoundation/MulleObjCStandardFoundation.h>
+#import <MulleObjCPlistFoundation/MulleObjCPlistFoundation.h>
 #else
 # import <Foundation/Foundation.h>
 #endif

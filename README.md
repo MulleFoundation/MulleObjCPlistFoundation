@@ -1,17 +1,53 @@
-# MulleObjCStandardFoundation
+# MulleObjCPlistFoundation
 
-#### 🚤 Platform-independent Objective-C classes, like NSString, NSArray, NSNotificationCenter
+#### 🏢 PropertyList parsing and printing
 
-These classes build on **MulleObjC** and **mulle-core** to provide the usual
-classes expected in a Foundation library, that require no more than the
-standard C libraries.
+PropertyLists are a human readable representation of some data. The classic
+Objective-C format is the [plist](//en.wikipedia.org/wiki/Property_list),
+which looks like this:
+
+```
+{
+	key = "string value";
+}
+```
+
+This library supports "plist". Add [MulleObjCJSMNFoundation](//github.com/MulleWeb/MulleObjCJSMNFoundation) for JSON
+or [MulleObjCExpatFoundation](//github.com/MulleFoundation/MulleObjCExpatFoundation) for XML.
 
 
+#### Classes
 
-Build Status | Release Version
--------------|-----------------------------------
-[![Build Status](https://travis-ci.org/MulleFoundation/MulleObjCStandardFoundation.svg?branch=release)](https://travis-ci.org/MulleFoundation/MulleObjCStandardFoundation) | ![Mulle kybernetiK tag](https://img.shields.io/github/tag/MulleFoundation/MulleObjCStandardFoundation.svg) [![Build Status](https://travis-ci.org/MulleFoundation/MulleObjCStandardFoundation.svg?branch=release)](https://travis-ci.org/MulleFoundation/MulleObjCStandardFoundation)
+Class                         | Description
+------------------------------|-----------------------
+`NSPropertyListSerialization` |
 
+
+### You are here
+
+```
+   .-------------------------------------------------------------------.
+   | MulleFoundation                                                   |
+   '-------------------------------------------------------------------'
+   .----------------------------.
+   | Calendar                   |
+   '----------------------------'
+   .----------------------------.
+   | OS                         |
+   '----------------------------'
+           .====================..----------..-----..---------.
+           | Plist              || Archiver || KVC || Unicode |
+           '====================''----------''-----''---------'
+           .--------------------------------------------------..-------.
+           | Standard                                         || Math  |
+           '--------------------------------------------------''-------'
+   .------..-----------------------------..----------------------------.
+   | Lock || Container                   || Value                      |
+   '------''-----------------------------''----------------------------'
+   .-------------------------------------------------------------------.
+   | MulleObjC                                                         |
+   '-------------------------------------------------------------------'
+```
 
 ## Install
 
@@ -19,26 +55,6 @@ See [foundation-developer](//github.com//foundation-developer) for
 installation instructions.
 
 ## License
-
-Parts of this library:
-
-Copyright (c) 2006-2007 Christopher J. W. Lloyd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is furnished
-to do so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
 
 
 ## Author

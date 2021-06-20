@@ -1,4 +1,4 @@
-#import <MulleObjCStandardFoundation/MulleObjCStandardFoundation.h>
+#import <MulleObjCPlistFoundation/MulleObjCPlistFoundation.h>
 
 
 @interface SimpleStream : NSObject <MulleObjCOutputStream>

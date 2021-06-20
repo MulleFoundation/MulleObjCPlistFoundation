@@ -1,5 +1,6 @@
 #ifdef __MULLE_OBJC__
-# import <MulleObjCStandardFoundation/MulleObjCStandardFoundation.h>
+# import <MulleObjCPlistFoundation/MulleObjCPlistFoundation.h>
+# import <MulleObjC/NSDebug.h>
 #else
 # import <Foundation/Foundation.h>
 #endif
