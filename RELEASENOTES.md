@@ -1,6 +1,6 @@
 ## 0.19.0
 
-* Various small improvements
+* split off from MulleObjCStandardFoundation
 
 
 ## 0.18.0
@@ -39,7 +39,7 @@
 * renamed `_GMTTimeZone` to `mulleGMTTimeZone`
 * exception functions like MulleObjCThrowErrnoException are now vectored via MulleObjC
 * NSPropertyListOpenStepFormat is now MullePropertyListLooseOpenStepFormat and MullePropertyListStrictOpenStepFormat is NSPropertyListOpenStepFormat, which should make the behaviour somewhat less surprising
-* split off parts to MulleObjCPlistFoundation
+* split off parts to MulleObjCStandardFoundation
 * split off parts to MulleObjCValueFoundation
 * rewrote and fixes the mulle-specific parts of `NSError` and the lazy generation of errors
 
