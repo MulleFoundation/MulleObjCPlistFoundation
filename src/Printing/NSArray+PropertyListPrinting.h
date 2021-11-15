@@ -38,10 +38,7 @@
 
 @interface NSArray( PropertyListPrinting) <MulleObjCPropertyListPrinting>
 
-- (void) propertyListUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                               indent:(NSUInteger) indent;
-
-- (void) jsonUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                       indent:(NSUInteger) indent;
+- (void) mullePrintPlist:(struct MulleObjCPrintPlistContext *) ctxt;
+- (void) mullePrintJSON:(struct MulleObjCPrintPlistContext *) ctxt;
 
 @end

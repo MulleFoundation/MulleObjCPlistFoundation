@@ -75,11 +75,9 @@ static struct format_info   json_format_info =
 //static char   empty[]     = { '(', ')' };
 
 
-- (void) _UTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                    indent:(NSUInteger) indent
-//            indentFunction:(char (*)(NSUInteger)) indentFunction
-              memberMethod:(SEL) memberMethod
-                formatInfo:(struct format_info *) info
+- (void) _mullePrintPlist:(struct MulleObjCPrintPlistContext *) ctxt
+             memberMethod:(SEL) memberMethod
+               formatInfo:(struct format_info *) info
 
 {
    NSUInteger   n;
@@ -88,47 +86,37 @@ static struct format_info   json_format_info =
    n = [self count];
    if( ! n)
    {
-      [handle mulleWriteBytes:info->empty
-                       length:sizeof( info->empty)];
+      MulleObjCPrintPlistContextWriteBytes( ctxt, info->empty, sizeof( info->empty));
       return;
    }
 
-   [handle mulleWriteBytes:info->opener
-                    length:sizeof( info->opener)];
+   MulleObjCPrintPlistContextWriteBytes( ctxt, info->opener, sizeof( info->opener));
    for( value in self)
    {
-//      [value propertyListUTF8DataToStream:handle
-//                                   indent:indent1];
-      MulleObjCObjectPerformSelector2( value, memberMethod, handle, (id) (intptr_t) indent);
+      MulleObjCObjectPerformSelector( value, memberMethod, (id) ctxt);
       if( --n)
-         [handle mulleWriteBytes:info->separator
-                          length:sizeof( info->separator)];
+         MulleObjCPrintPlistContextWriteBytes( ctxt, info->separator, sizeof( info->separator));
    }
 
-   [handle mulleWriteBytes:info->closer
-                    length:sizeof( info->closer)];
+   MulleObjCPrintPlistContextWriteBytes( ctxt, info->closer, sizeof( info->closer));
 }
 
 
-- (void) propertyListUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                               indent:(NSUInteger) indent
+- (void) mullePrintPlist:(struct MulleObjCPrintPlistContext *) ctxt
+
 {
-   [self _UTF8DataToStream:handle
-                    indent:indent
-//            indentFunction:MulleObjCPropertyListUTF8DataIndentation
-              memberMethod:_cmd
-                formatInfo:&plist_format_info];
+   [self _mullePrintPlist:ctxt
+             memberMethod:_cmd
+               formatInfo:&plist_format_info];
 }
 
 
-- (void) jsonUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                       indent:(NSUInteger) indent
+- (void) mullePrintJSON:(struct MulleObjCPrintPlistContext *) ctxt
+
 {
-   [self _UTF8DataToStream:handle
-                    indent:indent
-//            indentFunction:MulleObjCJSONUTF8DataIndentation
-              memberMethod:_cmd
-                formatInfo:&json_format_info];
+   [self _mullePrintPlist:ctxt
+             memberMethod:_cmd
+               formatInfo:&json_format_info];
 }
 
 @end

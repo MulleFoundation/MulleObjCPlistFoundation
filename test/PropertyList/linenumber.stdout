@@ -1,0 +1,3 @@
+MulleObjCUTF8StreamReader: -1 { {
+    NSLocalizedDescription = "<input>:25:error stray '#' (35) in input (needs to be quoted)";
+} }

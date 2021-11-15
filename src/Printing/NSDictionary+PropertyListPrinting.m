@@ -54,7 +54,7 @@ BOOL   _MulleObjCJSONSortedDictionary;
 
 @implementation NSDictionary( PropertyListPrinting)
 
-struct format_info
+struct dictionary_format_info
 {
    char   empty[ 2];
    char   separator[ 2];
@@ -62,14 +62,11 @@ struct format_info
    char   opener[ 2];
    char   closer[ 1];
    char   divider[ 3];
-   char   *(*indentFunction)(NSUInteger);
-   SEL    memberMethod;
    SEL    keyMethod;
-   BOOL   ignoreNSNull;
 };
 
 
-static struct format_info   plist_format_info =
+static struct dictionary_format_info   plist_format_info =
 {
    { '{', '}'      },  // empty
    { ';', '\n'     },  // separator
@@ -77,14 +74,12 @@ static struct format_info   plist_format_info =
    { '{', '\n'     },  // opener
    { '}'           },  // closer
    { ' ', '=', ' ' },  // divider
-   MulleObjCPropertyListUTF8DataIndentation,
-   @selector( propertyListUTF8DataToStream:indent:),
-   @selector( self),
-   YES
+   @selector( self)
 };
 
 
-static struct format_info   json_format_info =
+
+static struct dictionary_format_info   json_format_info =
 {
    { '{', '}'    },    // empty
    { ',', '\n'   },    // separator
@@ -92,41 +87,35 @@ static struct format_info   json_format_info =
    { '{', '\n'   },    // opener
    { '}'         },    // closer
    { ':', ' ', 0 },    // divider
-   MulleObjCJSONUTF8DataIndentation,
-   @selector( jsonUTF8DataToStream:indent:),
-   @selector( description),
-   NO
+   @selector( description)  // not sure
 };
 
 
 //
 // driven by formatInfo to support propertyList and JSON format
 //
-- (void) _UTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                    indent:(NSUInteger) indent
-                formatInfo:(struct format_info *) info
-                      sort:(BOOL) sort
+- (void) _mullePrintPlist:(struct MulleObjCPrintPlistContext *) ctxt
+             memberMethod:(SEL) memberMethod
+     dictionaryFormatInfo:(struct dictionary_format_info *) info
 {
    char         *indentation;
    id           key, value;
    NSArray      *keys;
    NSUInteger   n;
-   size_t       length;
 
    n = [self count];
    if( ! n)
    {
-      [handle mulleWriteBytes:info->empty
-                       length:sizeof( info->empty)];
+      [ctxt->handle mulleWriteBytes:info->empty
+                             length:sizeof( info->empty)];
       return;
    }
 
-   [handle mulleWriteBytes:info->opener
-                    length:2];
+   [ctxt->handle mulleWriteBytes:info->opener
+                         length:2];
 
-   ++indent; // inside '{'
-   indentation = (*info->indentFunction)( indent);
-   length      = strlen( indentation);
+   ++ctxt->indent; // inside '{'
+   indentation = MulleObjCPrintPlistContextUTF8Indentation( ctxt);
 
    //
    // don't really care if sorted or not but WTF.. :)
@@ -135,58 +124,54 @@ static struct format_info   json_format_info =
    // thought: use plists for "huge" data ?
    //
    keys = [self allKeys];
-   if( sort)
+   if( ctxt->sortsDictionary)
       keys = [keys sortedArrayUsingSelector:@selector( mulleCompareDescription:)];
    for( key in keys)
    {
       value = [self objectForKey:key];
-      if( info->ignoreNSNull && [value __isNSNull])
+      if( ! ctxt->allowsNull && [value __isNSNull])
          continue;
 
-      [handle mulleWriteBytes:indentation
-                       length:length];
-      //[key propertyListUTF8DataToStream:handle
+      [ctxt->handle mulleWriteUTF8String:indentation];
+      //[key mullePrintPropertyList:handle
       //                           indent:0];
       key = MulleObjCObjectPerformSelector0( key, info->keyMethod);
-      MulleObjCObjectPerformSelector2( key, info->memberMethod, handle, (id) (intptr_t) indent);
-      [handle mulleWriteBytes:info->divider
-                       length:info->divider[ 2] ? 3 : 2];
-      //[value propertyListUTF8DataToStream:handle
+      MulleObjCObjectPerformSelector( key, memberMethod, (id) ctxt);
+      [ctxt->handle mulleWriteBytes:info->divider
+                             length:info->divider[ 2] ? 3 : 2];
+      //[value mullePrintPropertyList:handle
       //                           indent:0];
-      MulleObjCObjectPerformSelector2( value, info->memberMethod, handle, (id) (intptr_t) indent);
+      MulleObjCObjectPerformSelector( value, memberMethod, (id) ctxt);
       if( --n)
-         [handle mulleWriteBytes:info->separator
-                          length:sizeof( info->separator)];
+         [ctxt->handle mulleWriteBytes:info->separator
+                                length:sizeof( info->separator)];
       else
-         [handle mulleWriteBytes:info->separator2
-                          length:sizeof( info->separator2)];
+         [ctxt->handle mulleWriteBytes:info->separator2
+                                length:sizeof( info->separator2)];
    }
 
-   indentation = (*info->indentFunction)( indent - 1);
-   [handle mulleWriteBytes:indentation
-                    length:-1];
-   [handle mulleWriteBytes:info->closer
-                    length:sizeof( info->closer)];
+   --ctxt->indent;
+   indentation = MulleObjCPrintPlistContextUTF8Indentation( ctxt);
+   [ctxt->handle mulleWriteUTF8String:indentation];
+   [ctxt->handle mulleWriteBytes:info->closer
+                          length:sizeof( info->closer)];
 }
 
 
-- (void) propertyListUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                                indent:(NSUInteger) indent
+- (void) mullePrintPlist:(struct MulleObjCPrintPlistContext *) ctxt
 {
-   [self _UTF8DataToStream:handle
-                    indent:indent
-                formatInfo:&plist_format_info
-                      sort:_MulleObjCPropertyListSortedDictionary];
+   [self _mullePrintPlist:ctxt
+             memberMethod:_cmd
+     dictionaryFormatInfo:&plist_format_info];
 }
 
 
-- (void) jsonUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                       indent:(NSUInteger) indent
+- (void) mullePrintJSON:(struct MulleObjCPrintPlistContext *) ctxt
+
 {
-   [self _UTF8DataToStream:handle
-                    indent:indent
-                formatInfo:&json_format_info
-                      sort:_MulleObjCJSONSortedDictionary];
+   [self _mullePrintPlist:ctxt
+             memberMethod:_cmd
+     dictionaryFormatInfo:&json_format_info];
 }
 
 @end

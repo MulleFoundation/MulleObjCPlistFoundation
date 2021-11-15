@@ -10,7 +10,7 @@
 - (void) mulleWriteBytes:(void *) bytes
                   length:(NSUInteger) length
 {
-   printf( "%.*s\n", (int) length, bytes);
+   printf( "%.*s", (int) length, (char *) bytes);
 }
 
 @end
@@ -21,13 +21,17 @@ int   main( void)
    MulleObjCBufferedOutputStream   *stream;
    SimpleStream                    *simple;
    int                             i;
+   char                            buf[ 64];
 
    simple = [SimpleStream object];
    stream = [[[MulleObjCBufferedOutputStream alloc] initWithOutputStream:simple
-                                                             flushLength:32] autorelease];
-   for( i = 0; i < 16; i++)
-      [stream mulleWriteBytes:"VfL Bochum 1848"
+                                                              bufferSize:32] autorelease];
+   for( i = 1848-15; i <= 1848; i++)
+   {
+      sprintf( buf, "VfL Bochum %d\n", i);
+      [stream mulleWriteBytes:buf
                        length:-1];
+   }
    [stream flush];
 
    return( 0);

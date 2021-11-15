@@ -56,6 +56,7 @@
 @end
 
 
+
 @implementation NSPropertyListSerialization
 
 
@@ -65,7 +66,7 @@
 #define S_PARSOR     8
 #define S_PRINTOR    6
 
-struct
+static struct
 {
    SEL            _detector[ S_DETECTOR];
    unsigned int   _n_detector;
@@ -133,17 +134,20 @@ struct
 
    [self mulleAddParserClass:self
                       method:@selector( mulleLooselyParsePropertyListData:)
-       forPropertyListFormat:MullePropertyListLooseOpenStepFormat];
+       forPropertyListFormat:MullePropertyListLoosePlistFormat];
    [self mulleAddParserClass:self
                       method:@selector( mulleParsePropertyListData:)
        forPropertyListFormat:NSPropertyListOpenStepFormat];
+   [self mulleAddParserClass:self
+                      method:@selector( mulleParsePBXPropertyListData:)
+       forPropertyListFormat:MullePropertyListPBXFormat];
 
-   [self mulleAddPrintMethod:@selector( propertyListUTF8DataToStream:)
-         forPropertyListFormat:MullePropertyListLooseOpenStepFormat];
-   [self mulleAddPrintMethod:@selector( propertyListUTF8DataToStream:)
+   [self mulleAddPrintMethod:@selector( mullePrintLoosePlistToStream:)
+         forPropertyListFormat:MullePropertyListLoosePlistFormat];
+   [self mulleAddPrintMethod:@selector( mullePrintPlistToStream:)
          forPropertyListFormat:NSPropertyListOpenStepFormat];
 
-   [self mulleAddPrintMethod:@selector( jsonUTF8DataToStream:)
+   [self mulleAddPrintMethod:@selector( mullePrintJSONToStream:)
          forPropertyListFormat:MullePropertyListJSONFormat];
 }
 
@@ -169,14 +173,14 @@ struct
    i = Self._n_printor;
    while( --i >= 0)
    {
-      if( format == Self._printor[ i].format)
-      {
-         data = [NSMutableData dataWithCapacity:4192];
-         MulleObjCObjectPerformSelector( plist, Self._printor[ i].method, data);
-         if( ! data && errorDescription)
-            *errorDescription = @"failed";   // TODO: grab current NSError or so
-         return( data);
-      }
+      if( format != Self._printor[ i].format)
+         continue;
+
+      data = [NSMutableData dataWithCapacity:4192];
+      MulleObjCObjectPerformSelector( plist, Self._printor[ i].method, data);
+      if( ! data && errorDescription)
+         *errorDescription = @"failed";   // TODO: grab current NSError or so
+      return( data);
    }
 
    if( errorDescription)
@@ -241,20 +245,17 @@ struct
    while( --i >= 0)
    {
       // fprintf( stderr, "%ld vs %ld\n", Self._parsor[ i].format, format);
+      if( Self._parsor[ i].format != format)
+         continue;
+      // default doesn't create a separate parse instance so we
+      // use the +method, but for subclasses we create an instance
+      // so it can keep state
+      parser = self;
+      if( Self._parsor[ i].cls != parser)
+         parser = [[Self._parsor[ i].cls new] autorelease];
 
-      if( Self._parsor[ i].format == format)
-      {
-         // default doesn't create a separate parse instance so we
-         // use the +method, but for subclasses we create an instance
-         // so it can keep state
-         parser = self;
-         if( Self._parsor[ i].cls != parser)
-            parser = [[Self._parsor[ i].cls new] autorelease];
-
-         plist  = MulleObjCObjectPerformSelector( parser, Self._parsor[ i].method, data);
-         if( plist)
-            break;
-      }
+      plist = MulleObjCObjectPerformSelector( parser, Self._parsor[ i].method, data);
+      break;
    }
    return( plist);
 }
@@ -264,13 +265,13 @@ NSString   *MulleStringFromPropertListFormatString( NSPropertyListFormat format)
 {
    switch( format)
    {
-   case NSPropertyListOpenStepFormat         : return( @"OpenStep");
-   case MullePropertyListLooseOpenStepFormat : return( @"Loose OpenStep");
+   case NSPropertyListOpenStepFormat      : return( @"OpenStep");
+   case MullePropertyListLoosePlistFormat : return( @"Loose OpenStep");
 //    MullePropertyListGNUstepFormat        = 4, // future
 //    MullePropertyListFormat               = 5, // future
-   case MullePropertyListJSONFormat          : return( @"JSON");
-   case NSPropertyListXMLFormat_v1_0         : return( @"XML");
-   case NSPropertyListBinaryFormat_v1_0      : return( @"binary");
+   case MullePropertyListJSONFormat       : return( @"JSON");
+   case NSPropertyListXMLFormat_v1_0      : return( @"XML");
+   case NSPropertyListBinaryFormat_v1_0   : return( @"binary");
    }
    return( @"???");
 }
@@ -281,16 +282,42 @@ NSString   *MulleStringFromPropertListFormatString( NSPropertyListFormat format)
                           format:(NSPropertyListFormat *) p_format
                     formatOption:(enum MullePropertyListFormatOption) formatOption
 {
-   _MulleObjCByteOrderMark        bom;
-   id                             plist;
-   NSPropertyListSerialization    *parser;
-   NSPropertyListFormat           dummy;
+   _MulleObjCByteOrderMark       bom;
+   id                            plist;
+   NSPropertyListSerialization   *parser;
+   NSPropertyListFormat          dummy;
+   NSPropertyListFormat          requestedFormat;
+   NSPropertyListFormat          detectedFormat;
+   NSPropertyListFormat          usedFormat;
 
    if( ! p_format)
    {
       dummy    = 0;
       p_format = &dummy;
    }
+   requestedFormat = *p_format;
+
+   switch( formatOption)
+   {
+   case MullePropertyListFormatOptionPrefer :
+   case MullePropertyListFormatOptionForce  :
+      if( ! requestedFormat)
+      {
+         [NSError mulleSetGenericErrorWithDomain:@"PlistDomain"
+                            localizedDescription:@"Can not parse with prefer or force option and empty format"];
+         return( nil);
+      }
+   default : ;
+   }
+
+   // sometimes ensure p_format wasn't forgotten to be initted
+   assert( requestedFormat == 0
+           || requestedFormat == NSPropertyListOpenStepFormat
+           || requestedFormat == MullePropertyListLoosePlistFormat
+           || requestedFormat == MullePropertyListPBXFormat
+           || requestedFormat == MullePropertyListJSONFormat
+           || requestedFormat == NSPropertyListXMLFormat_v1_0
+           || requestedFormat == NSPropertyListBinaryFormat_v1_0);
 
    bom = [data _byteOrderMark];
    switch( bom)
@@ -320,31 +347,39 @@ NSString   *MulleStringFromPropertListFormatString( NSPropertyListFormat format)
    // TODO: make this more plug and play via lookup table
 
    // default error
+   detectedFormat = 0;
    if( formatOption != MullePropertyListFormatOptionForce)
-      *p_format = [self mulleDetectPropertListFormatWithData:data];
+      detectedFormat = [self mulleDetectPropertListFormatWithData:data];
 
-   if( ! *p_format)
+   switch( formatOption)
    {
-      if( formatOption == MullePropertyListFormatOptionForce)
-         [NSError mulleSetGenericErrorWithDomain:@"PlistDomain"
-                            localizedDescription:@"Can not parse with force option and empty format"];
+   case MullePropertyListFormatOptionForce :
+      usedFormat = requestedFormat;
+      break;
+
+   case MullePropertyListFormatOptionPrefer :
+      if( detectedFormat == NSPropertyListOpenStepFormat && requestedFormat <= MullePropertyListPBXFormat)
+         usedFormat = requestedFormat;
       else
-         [NSError mulleSetGenericErrorWithDomain:@"PlistDomain"
-                            localizedDescription:@"Can not parse this format"];
-      return( nil);
+         usedFormat = detectedFormat;
+      break;
+
+   default :
+      usedFormat = detectedFormat;
    }
 
-   if( formatOption == MullePropertyListFormatOptionPrefer &&
-      *p_format == NSPropertyListOpenStepFormat)
+   if( ! usedFormat)
    {
-      *p_format = MullePropertyListLooseOpenStepFormat;
+      [NSError mulleSetGenericErrorWithDomain:@"PlistDomain"
+                         localizedDescription:@"Can not parse this format"];
+      return( nil);
    }
 
    plist = [self parsePropertyListData:data
                       mutabilityOption:opt
-                                format:*p_format];
+                                format:usedFormat];
+   *p_format = usedFormat;
    return( plist);
-
 }
 
 
@@ -359,7 +394,7 @@ NSString   *MulleStringFromPropertListFormatString( NSPropertyListFormat format)
 
    // this is for backwards compatibility with older test code
    formatOption = MullePropertyListFormatOptionDetect;
-   if( p_format && *p_format == MullePropertyListLooseOpenStepFormat)
+   if( p_format && *p_format == MullePropertyListLoosePlistFormat)
       formatOption = MullePropertyListFormatOptionPrefer;
 
    plist = [self mullePropertyListFromData:data
@@ -388,7 +423,7 @@ NSString   *MulleStringFromPropertListFormatString( NSPropertyListFormat format)
 
    // this is for backwards compatibility with older test code
    formatOption = MullePropertyListFormatOptionDetect;
-   if( p_format && *p_format == MullePropertyListLooseOpenStepFormat)
+   if( p_format && *p_format == MullePropertyListLoosePlistFormat)
       formatOption = MullePropertyListFormatOptionPrefer;
 
    plist = [self mullePropertyListFromData:data
@@ -420,7 +455,33 @@ NSString   *MulleStringFromPropertListFormatString( NSPropertyListFormat format)
    stream = [[[MulleObjCBufferedInputStream alloc] initWithData:data] autorelease];
    reader = [[[_MulleObjCPropertyListReader alloc] initWithBufferedInputStream:stream] autorelease];
 
+   // can't do dates yet
    [reader setDecodesComments:YES];
+   [reader setDecodesNull:YES];
+   [reader setDecodesPBX:NO];
+   [reader setDecodesNumber:YES];
+   [reader setDecodesBool:YES];
+   [reader setErrorHandling:MulleObjCSetsAndLogsError];
+
+   plist = [_MulleObjCNewFromPropertyListWithStreamReader( reader) autorelease];
+   return( plist);
+}
+
+
++ (id) mulleParsePBXPropertyListData:(NSData *) data
+{
+   _MulleObjCPropertyListReader   *reader;
+   MulleObjCBufferedInputStream   *stream;
+   id                             plist;
+   NSPropertyListSerialization    *parser;
+   NSString                       *dummy;
+
+   stream = [[[MulleObjCBufferedInputStream alloc] initWithData:data] autorelease];
+   reader = [[[_MulleObjCPropertyListReader alloc] initWithBufferedInputStream:stream] autorelease];
+
+   // can't do dates yet
+   [reader setDecodesComments:YES];
+   [reader setDecodesNull:NO];
    [reader setDecodesPBX:YES];
    [reader setDecodesNumber:YES];
    [reader setErrorHandling:MulleObjCSetsAndLogsError];
@@ -428,7 +489,6 @@ NSString   *MulleStringFromPropertListFormatString( NSPropertyListFormat format)
    plist = [_MulleObjCNewFromPropertyListWithStreamReader( reader) autorelease];
    return( plist);
 }
-
 
 //
 // what will eventually be called (yes it's not an instance method)
@@ -445,6 +505,7 @@ NSString   *MulleStringFromPropertListFormatString( NSPropertyListFormat format)
    reader = [[[_MulleObjCPropertyListReader alloc] initWithBufferedInputStream:stream] autorelease];
 
    [reader setDecodesComments:NO];
+   [reader setDecodesNull:NO];
    [reader setDecodesPBX:NO];
    [reader setDecodesNumber:NO];
    [reader setErrorHandling:MulleObjCSetsAndLogsError];
@@ -464,7 +525,15 @@ NSString   *MulleStringFromPropertListFormatString( NSPropertyListFormat format)
 }
 
 
-// a heuristic
+// a heuristic can distinguish, between
+//
+// NSPropertyListBinaryFormat_v1_0
+// NSPropertyListOpenStepFormat
+// NSPropertyListXMLFormat_v1_0
+// MullePropertyListJSONFormat
+//
+// Does not figure out Loose and PBX
+//
 + (NSPropertyListFormat) mulleDetectPropertyListFormat:(NSData *) data
 {
    BOOL         instring;

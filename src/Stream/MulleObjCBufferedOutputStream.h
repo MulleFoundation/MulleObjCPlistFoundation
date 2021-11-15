@@ -56,9 +56,13 @@ MULLE_OBJC_BUFFERED_OUTPUT_STREAM_IVAR_VISIBILITY      // allow public access fo
 - (instancetype) initWithOutputStream:(id <MulleObjCOutputStream>) stream;
 
 - (instancetype) initWithOutputStream:(id <MulleObjCOutputStream>) stream
-                          flushLength:(NSUInteger) length;
+                           bufferSize:(NSUInteger) length;
 
 // use this at the end to flush remaining bytes out (or finalize the stream)
+// a buffered stream, is not like system file handle which gets closed and
+// flushed on exit. A MulleObjCBufferedOutputStream could stick in a
+// NSAutoreleasePool and be silently discarded...
+//
 - (void) flush;
 
 @end

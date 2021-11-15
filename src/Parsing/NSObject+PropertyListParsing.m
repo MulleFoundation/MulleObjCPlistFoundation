@@ -57,152 +57,6 @@
 
 @implementation NSObject( NSPropertyListParsing)
 
-
-enum
-{
-   is_string = 0,
-   is_integer,
-   is_double
-};
-
-enum
-{
-   has_nothing,
-   has_sign,
-   has_leading_zero,
-   has_integer,
-   has_dot,
-   has_fractional,
-   has_exp,
-   has_exp_sign,
-   has_exponent,
-};
-
-
-//
-// can't parse hex, and octal.
-// specifically does not parse leading 0 numbers (except 0) (avoid phonenumbers)
-// does not allow leading plus (avoid phonenumbers)
-// does not allow .2
-// does allow 0.e10
-// does not allow e10
-// guarantees that int chars are <= 19
-// of course this is a heuristic. on the bright side, we quote "dudes" on
-// output
-//
-int   _dude_looks_like_a_number( char *buffer, size_t len);
-
-int   _dude_looks_like_a_number( char *buffer, size_t len)
-{
-   char   *sentinel;
-   int    state;
-   int    c;
-   int    sign;
-
-
-   state    = has_nothing;
-   sentinel = &buffer[ len];
-   sign     = 0;
-
-   while( buffer < sentinel)
-   {
-      c = *buffer++;
-
-      switch( state)
-      {
-      case has_nothing :
-         switch( c)
-         {
-         case '-' : state = has_sign; sign = 1; continue;
-         case '0' : state = has_leading_zero; continue;
-         default  : if( isdigit( c)) { state = has_integer; continue; }
-         }
-         return( is_string);
-
-      case has_sign :
-         switch( c)
-         {
-         case '0' : state = has_leading_zero; continue;
-         default  : if( isdigit( c)) { state = has_integer; continue; }
-         }
-         return( is_string);
-
-      case has_leading_zero :
-         switch( c)
-         {
-         case 'e' :
-         case 'E' : state = has_exp; continue;
-         case ',' :
-         case '.' : state = has_dot; continue;
-         default  : ;
-         }
-         return( is_string);
-
-      case has_integer :
-         switch( c)
-         {
-         case 'e' :
-         case 'E' : state = has_exp; continue;
-         case ',' :
-         case '.' : state = has_dot; continue;
-         default  : if( isdigit( c)) { continue; }
-         }
-         return( is_string);
-
-      case has_dot :
-         switch( c)
-         {
-         case 'e' :
-         case 'E' : state = has_exp; continue;
-         default  : if( isdigit( c)) { state = has_fractional; continue; }
-         }
-         return( is_string);
-
-      case has_fractional :
-         switch( c)
-         {
-         case 'e' :
-         case 'E' : state = has_exp; continue;
-         default  : if( isdigit( c)) { continue; }
-         }
-         return( is_string);
-
-      case has_exp :
-         switch( c)
-         {
-         case '+' :
-         case '-' : state = has_exp_sign; continue;
-         default  : if( isdigit( c)) { state = has_exponent; continue; }
-         }
-         return( is_string);
-
-      case has_exp_sign :
-         if( isdigit( c)) { state = has_exponent; continue; }
-         return( is_string);
-
-      case has_exponent :
-         if( isdigit( c)) {  continue; }
-         return( is_string);
-      }
-   }
-
-   //
-   // https://stackoverflow.com/questions/1701055/what-is-the-maximum-length-in-chars-needed-to-represent-any-double-value
-   // printed double values can be as large as 1080!
-   //
-   switch( state)
-   {
-   case has_leading_zero :
-   case has_integer      : if( len - sign <= 19)
-                              return( is_integer);  // 922,337,203,685,477,580
-                           return( is_string);
-   case has_fractional   : // fall thru
-   case has_exponent     : return( is_double);
-   }
-   return( is_string);
-}
-
-
 //
 // if it's unquoted it's known to be non-nil, unescaped and alnum
 // (with possibly +-eE)
@@ -215,6 +69,8 @@ id   _MulleObjCNewObjectParsedUnquotedFromPropertyListWithReader( _MulleObjCProp
    int                    type;
    long long              ll_val;
    double                 d_val;
+   NSString               *s;
+   NSNumber               *nr;
 
    _MulleObjCPropertyListReaderBookmark( reader);
    _MulleObjCPropertyListReaderSkipUntilTrue( reader, _MulleObjCPropertyListReaderIsUnquotedStringEndChar);
@@ -223,24 +79,25 @@ id   _MulleObjCNewObjectParsedUnquotedFromPropertyListWithReader( _MulleObjCProp
 
    if( [reader decodesNumber])
    {
-      switch( type = _dude_looks_like_a_number( (char *) region.bytes, region.length))
-      {
-      case is_integer :
-      case is_double  :
-         memcpy( buf, region.bytes, region.length);
-         buf[ region.length] = 0;
+      nr = MulleNewNumberWithUTF8Data( mulle_utf8data_make( region.bytes, region.length));
+      if( nr)
+         return( nr);
+   }
 
-         if( type == is_integer)
-         {
-            ll_val = strtoll( buf, &end, 10);
-            if( *end == 0)
-               return( [[NSNumber alloc] initWithLongLong:ll_val]);
-         }
-         d_val = strtod( buf, &end);
-         if( *end == 0)
-            return( [[NSNumber alloc] initWithDouble:d_val]);
-      }
-      // fall thru
+   if( [reader decodesBool])
+   {
+      nr = MulleNewBoolWithUTF8Data( mulle_utf8data_make( region.bytes, region.length));
+      if( nr)
+         return( nr);
+   }
+
+   if( region.length == 8 && region.bytes[ 0] == '_')
+   {
+      if( ! memcmp( region.bytes, "__NULL__", 8))
+         return( [reader->nsNull retain]);
+      else
+         return( _MulleObjCPropertyListReaderFail( reader,
+                                                   @"stray '_' in input (needs to be quoted)"));
    }
    return( [[reader->nsStringClass alloc] mulleInitWithUTF8Characters:region.bytes
                                                                length:region.length]);
@@ -270,22 +127,22 @@ id   _MulleObjCNewFromPropertyListWithStreamReader( _MulleObjCPropertyListReader
    switch( x)
    {
    case -1 :
-      return( (id) _MulleObjCPropertyListReaderFail( reader,
-                     @"empty property list is invalid"));
+      return( _MulleObjCPropertyListReaderFail( reader, @"empty property list is invalid"));
 
    default: // an unquoted string or number
       if( ! [reader decodesComments])
       {
          if( x == '/')
-            return( (id) _MulleObjCPropertyListReaderFail( reader, @"stray '/' in input (needs to be quoted)"));
+            return( _MulleObjCPropertyListReaderFail( reader,
+                                                      @"stray '/' in input (needs to be quoted)"));
       }
 
       /* we missed a '/', only happens ifdef MULLE_PLIST_DECODE_PBX  */
       missingSlash = (x != _MulleObjCPropertyListReaderCurrentUTF32Character( reader));
       if( ! _MulleObjCPropertyListReaderIsUnquotedStringStartChar( reader, x))
-         return( (id) _MulleObjCPropertyListReaderFail( reader,
-                     @"stray '%c' (%ld) in input (needs to be quoted)",
-                     (int) x, x));
+         return( _MulleObjCPropertyListReaderFail( reader,
+                                                   @"stray '%c' (%ld) in input (needs to be quoted)",
+                                                   (int) x, x));
 
       plist = _MulleObjCNewObjectParsedUnquotedFromPropertyListWithReader( reader);
       if( missingSlash && plist)
@@ -301,7 +158,7 @@ id   _MulleObjCNewFromPropertyListWithStreamReader( _MulleObjCPropertyListReader
          return( plist);
       break;
 
-   case '{': // dictionary
+   case '{': // dictionary (or set with {(
       plist = _MulleObjCNewDictionaryFromPropertyListWithReader( reader, nil);
       return( plist);
 
@@ -309,21 +166,21 @@ id   _MulleObjCNewFromPropertyListWithStreamReader( _MulleObjCPropertyListReader
       plist = _MulleObjCNewArrayFromPropertyListWithReader( reader);
       return( plist);
 
-   case '<': // data
+   case '<': // data or date <@
       plist = _MulleObjCNewDataFromPropertyListWithReader( reader);
       return( plist);
 
    case '}' :
    case ')' :  // can happen in  (  v, y, c, ) situations
-      return( [NSNull null]);
+      return( [reader->nsNull retain]);
    }
-
-   // known to be a string, lets check if it really is "strings format"
-   NSCParameterAssert( [plist __isNSString] || [plist __isNSNumber]);
 
    x = _MulleObjCPropertyListReaderSkipWhiteAndComments( reader);
    if( x != '=')
       return( plist);
+
+   // known to be a string, lets check if it really is "strings format"
+   NSCParameterAssert( [plist __isNSString] || [plist __isNSNumber]);
 
    /* it's a strings file really ! */
    [reader setStringsPlist:YES];

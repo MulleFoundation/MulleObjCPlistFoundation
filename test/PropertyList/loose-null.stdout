@@ -1,0 +1,6 @@
+decoded: {
+    foo = NSNull;
+}
+encoded: {
+	foo = __NULL__
+}

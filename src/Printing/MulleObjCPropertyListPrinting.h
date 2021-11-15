@@ -40,12 +40,41 @@
 
 @class NSLocale;
 
+struct MulleObjCPrintPlistContext
+{
+   id <MulleObjCOutputStream>   handle;
+   IMP                          writeBytes_length;
+   NSUInteger                   indent;
+   NSUInteger                   indentPerLevel;
+   char                         indentChar;
+
+   BOOL                         allowsNull;
+   BOOL                         printsBool;
+   BOOL                         sortsDictionary;
+   BOOL                         alwaysQuotesStrings;
+   BOOL                         usesExtensions; // can print but nor parse
+
+   NSDateFormatter              *dateFormatter;
+};
+
+
+void  MulleObjCPrintPlistContextInit( struct MulleObjCPrintPlistContext *ctxt,
+                                      id <MulleObjCOutputStream> handle);
+void  MulleObjCPrintPlistContextSetHandle( struct MulleObjCPrintPlistContext *ctxt,
+                                           id <MulleObjCOutputStream> handle);
+
 
 // TODO: prefix with mulle, this is all incompatible
 
 PROTOCOLCLASS_INTERFACE0( MulleObjCPropertyListPrinting)
 
-// you need to implement some, but not all ... use the source
+//
+// This is what participating classes should implement. This also allows
+// more control over what is printed. You put the handle into the ctxt and
+// also set some configs (see above)
+//
+- (void) mullePrintPlist:(struct MulleObjCPrintPlistContext *) ctxt;
+- (void) mullePrintJSON:(struct MulleObjCPrintPlistContext *) ctxt;
 
 @optional
 
@@ -55,46 +84,49 @@ PROTOCOLCLASS_INTERFACE0( MulleObjCPropertyListPrinting)
 - (NSString *) mulleJSONDescription;
 
 //
-// this is what is called at the top. the idea is that
 // MulleObjCOutputStream can be a NSFileHandle or a NSMutableData
 // and that the plist or json is printed into
 //
-- (void) propertyListUTF8DataToStream:(id <MulleObjCOutputStream>) handle;
-- (void) jsonUTF8DataToStream:(id <MulleObjCOutputStream>) handle;
+- (void) mullePrintPlistToStream:(id <MulleObjCOutputStream>) handle;
+- (void) mullePrintLoosePlistToStream:(id <MulleObjCOutputStream>) handle;
+- (void) mullePrintJSONToStream:(id <MulleObjCOutputStream>) handle;
 
-//
-// This is what participating classes should implement
-//
-- (void) propertyListUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                               indent:(NSUInteger) indent;
-- (void) jsonUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                       indent:(NSUInteger) indent;
-
-
-//
-// For some classes, it may be more convenient to convert into an intermediate
-// NSData first.
-//
-- (NSData *) propertyListUTF8DataWithIndent:(NSUInteger) indent;
-- (NSData *) jsonUTF8DataWithIndent:(NSUInteger) indent;
 
 PROTOCOLCLASS_END()
 
 
 // these helper methods produce indentation
 MULLE_C_NONNULL_RETURN
-char   *MulleObjCPropertyListUTF8DataIndentation( NSUInteger level);
+char   *MulleObjCPrintPlistContextUTF8Indentation( struct MulleObjCPrintPlistContext *ctxt);
 
 MULLE_C_NONNULL_RETURN
-char   *MulleObjCJSONUTF8DataIndentation( NSUInteger level);
+char   *_MulleObjCPrintPlistContextUTF8Indentation( NSUInteger indent,
+                                                    NSUInteger indentPerLevel,
+                                                    NSUInteger indentChar);
 
+void   MulleObjCPrintPlistContextWriteUTF8Indentation( struct MulleObjCPrintPlistContext *ctxt);
 
-extern unsigned int   _MulleObjCPropertyListUTF8DataIndentationPerLevel;  //   = 1;
-extern char           _MulleObjCPropertyListUTF8DataIndentationCharacter; //  = '\t';
-extern BOOL           _MulleObjCPropertyListSortedDictionary; //  = YES
-extern NSLocale       *_MulleObjCPropertyListCanonicalPrintingLocale;
+//
+static inline void
+   MulleObjCPrintPlistContextWriteUTF8String( struct MulleObjCPrintPlistContext *ctxt,
+                                              char *s)
+{
+   MulleObjCIMPCall2( ctxt->writeBytes_length,
+                      ctxt->handle,
+                      @selector( mulleWriteBytes:length:),
+                      (id) s,
+                      (id) strlen( s));
+}
 
-extern unsigned int   _MulleObjCJSONUTF8DataIndentationPerLevel;  //   = 1;
-extern char           _MulleObjCJSONUTF8DataIndentationCharacter; //  = '\t';
-extern BOOL           _MulleObjCJSONSortedDictionary; //  = YES
-extern NSLocale       *_MulleObjCJSONCanonicalPrintingLocale;
+static inline void
+   MulleObjCPrintPlistContextWriteBytes( struct MulleObjCPrintPlistContext *ctxt,
+                                         void *bytes,
+                                         NSUInteger length)
+{
+   MulleObjCIMPCall2( ctxt->writeBytes_length,
+                      ctxt->handle,
+                      @selector( mulleWriteBytes:length:),
+                      (id) bytes,
+                      (id) length);
+}
+

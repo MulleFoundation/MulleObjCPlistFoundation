@@ -51,8 +51,7 @@ static inline unsigned char   toHex( unsigned char c)
 }
 
 
-- (void) propertyListUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                               indent:(NSUInteger) indent
+- (void) mullePrintPlist:(struct MulleObjCPrintPlistContext *) ctxt
 {
    size_t          i, len;
    size_t          out_len;
@@ -60,9 +59,12 @@ static inline unsigned char   toHex( unsigned char c)
    unsigned char   *q;
    NSMutableData   *buffer;
 
-   len     = [self length];
-   out_len = 1 + len * 2 + ((len + 3) / 4) - 1 + 1;
-   buffer  = [NSMutableData dataWithLength:out_len];
+   len      = [self length];
+   out_len  = 1;
+   out_len += len * 2;
+   out_len += len ? ((len + 3) / 4) - 1 : 0;
+   out_len += 1;
+   buffer   = [NSMutableData dataWithLength:out_len];
 
    p = (unsigned char *) [self bytes];
    q = (unsigned char *) [buffer bytes];
@@ -76,15 +78,16 @@ static inline unsigned char   toHex( unsigned char c)
       if( (i & 0x3) == 3 && i != len -1)
          *q++ = ' ';
    }
-   *q = '>';
+   *q++ = '>';
 
-   [handle writeData:buffer];
+   assert( q == &((unsigned char *)[buffer bytes])[ out_len]);
+
+   [ctxt->handle writeData:buffer];
 }
 
 
 
-- (void) jsonUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                       indent:(NSUInteger) indent
+- (void) mullePrintJSON:(struct MulleObjCPrintPlistContext *) ctxt
 {
    size_t          i, len;
    size_t          out_len;
@@ -112,7 +115,7 @@ static inline unsigned char   toHex( unsigned char c)
    *q++ = '>';
    *q++ = '"';
 
-   [handle writeData:buffer];
+   [ctxt->handle writeData:buffer];
 }
 
 

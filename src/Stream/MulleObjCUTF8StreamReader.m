@@ -87,23 +87,29 @@ const size_t   MulleObjCUTF8StreamReaderDefaultBufferSize = 0x1000;
 }
 
 
+- (NSString *) filename
+{
+   return( _filename ? _filename : @"<input>");
+}
+
+
 - (void) bookmark
 {
    [_stream bookmark];
 }
 
 
-- (NSData *) bookmarkedData
+- (NSData *) extractBookmarkedData
 {
    // our stop and quote characters are ASCII...
 
-   return( [_stream bookmarkedData]);
+   return( [_stream extractBookmarkedData]);
 }
 
 
-- (MulleObjCMemoryRegion) bookmarkedRegion
+- (MulleObjCMemoryRegion) extractBookmarkedRegion
 {
-   return( [_stream bookmarkedRegion]);
+   return( [_stream extractBookmarkedRegion]);
 }
 
 
@@ -136,17 +142,35 @@ const size_t   MulleObjCUTF8StreamReaderDefaultBufferSize = 0x1000;
 // what happened before this call, someone peaked at the current character
 // and saw that top bit was set
 //
-long   __MulleObjCUTF8StreamReaderComposeUTF32Character( MulleObjCUTF8StreamReader *self, unsigned char x)
+long   __MulleObjCUTF8StreamReaderComposeUTF32Character( MulleObjCUTF8StreamReader *self,
+                                                         unsigned char x)
 {
    int    i;
+   int    n;
    long   value;
    int    c;
+   int    len;
 
    if( x < 0xC2) // invalid at start
-      return( x);
+      return( 0xFFFD);
 
-   i     = 0;
-   value = x & ((x < 0xE0) ? 0x1E : (x < 0xF0) ? 0xF : 0x3);
+   n     = 2;
+   value = x & 0x1E;
+   if( x >= 0xE0)
+   {
+      n     = 3;
+      value = x & 0xF;
+      if( x >= 0xF0)
+      {
+         if( x >= 0xF5)
+            return( x);
+
+         n     = 4;
+         value = x & 0x3;
+      }
+   }
+
+   i = 1;
 
    do
    {
@@ -160,7 +184,7 @@ long   __MulleObjCUTF8StreamReaderComposeUTF32Character( MulleObjCUTF8StreamRead
       value <<= 6;
       value  |= x & 0x3F;
    }
-   while( ++i < 4);
+   while( ++i < n);
 
    return( value);
 }
@@ -174,25 +198,47 @@ void   MulleObjCUTF8StreamReaderFailV( MulleObjCUTF8StreamReader *_self,
    NSString     *prefixed;
    NSString     *description;
    NSUInteger   errorHandling;
+   NSString     *s;
 
-   prefixed = [NSString stringWithFormat:@"error:%ld:%@", self->_lineNr, format];
+   // escape protect
+   s = [_self filename];
+   s = [[s componentsSeparatedByString:@"%"] componentsJoinedByString:@"%%"];
+
+   prefixed = [NSString stringWithFormat:@"%@:%ld:error %@",
+                     s, self->_lineNr, format];
 
    errorHandling = [_self errorHandling];
    if( errorHandling == MulleObjCThrowsException)
+   {
+      va_list copy;  // a va_list is used up once read
+
+      va_copy( copy, args);
       [NSException raise:@"MulleObjCUTF8StreamReaderException"
                   format:prefixed
-               arguments:args];
+               arguments:copy];
+      va_end( copy);
+   }
 
    if( errorHandling >= MulleObjCSetsAndLogsError)
+   {
+      va_list copy;  // a va_list is used up once read
+
+      va_copy( copy, args);
       [_self logFailure:prefixed
-              arguments:args];
+              arguments:copy];
+      va_end( copy);
+   }
 
    if( errorHandling < MulleObjCSetsError)
    {
+      va_list copy;  // a va_list is used up once read
+
+      va_copy( copy, args);
       description = [NSString mulleStringWithFormat:prefixed
-                                          arguments:args];
+                                          arguments:copy];
       [NSError mulleSetGenericErrorWithDomain:@"MulleObjCUTF8StreamReader"
                          localizedDescription:description];
+      va_end( copy);
    }
  }
 

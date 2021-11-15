@@ -50,28 +50,20 @@
 // std-c and dependencies
 
 
-@implementation NSNumber( PropertyListPrinting)
+@implementation NSNull( PropertyListPrinting)
 
-- (void) propertyListUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                               indent:(NSUInteger) indent
+// an extension
+- (void) mullePrintPlist:(struct MulleObjCPrintPlistContext *) ctxt
 {
-   NSString   *s;
-   NSData     *data;
-
-   s  = [self descriptionWithLocale:_MulleObjCPropertyListCanonicalPrintingLocale];
-   [s mulleWriteToStream:handle
-           usingEncoding:NSUTF8StringEncoding];
+   [ctxt->handle mulleWriteBytes:"__NULL__"
+                         length:8];
 }
 
 
-- (void) jsonUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                       indent:(NSUInteger) indent
+- (void) mullePrintJSON:(struct MulleObjCPrintPlistContext *) ctxt
 {
-   NSString   *s;
-
-   s = [self descriptionWithLocale:_MulleObjCJSONCanonicalPrintingLocale];
-   [s mulleWriteToStream:handle
-           usingEncoding:NSUTF8StringEncoding];
+   [ctxt->handle mulleWriteBytes:"null"
+                          length:4];
 }
 
 @end
@@ -80,49 +72,45 @@
 
 @implementation _MulleObjCBoolNumber( PropertyListPrinting)
 
-- (void) propertyListUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                               indent:(NSUInteger) indent
+- (void) mullePrintPlist:(struct MulleObjCPrintPlistContext *) ctxt
 {
-   if( [self boolValue])
-      [handle mulleWriteBytes:"YES"
-                       length:3];
+   BOOL   flag;
+   char   c;
+
+   flag = [self boolValue];
+   if( ! ctxt->printsBool)
+   {
+      c = flag + '0';
+      [ctxt->handle mulleWriteBytes:&c
+                             length:1];
+      return;
+   }
+
+   if( flag)
+      [ctxt->handle mulleWriteBytes:"YES"
+                             length:3];
    else
-      [handle mulleWriteBytes:"NO"
-                       length:2];
+      [ctxt->handle mulleWriteBytes:"NO"
+                             length:2];
 }
 
-- (void) jsonUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                       indent:(NSUInteger) indent
+
+- (void) mullePrintJSON:(struct MulleObjCPrintPlistContext *) ctxt
 {
    if( [self boolValue])
-      [handle mulleWriteBytes:"true"
-                       length:4];
+      [ctxt->handle mulleWriteBytes:"true"
+                             length:4];
    else
-      [handle mulleWriteBytes:"false"
-                       length:5];
+      [ctxt->handle mulleWriteBytes:"false"
+                             length:5];
 }
 
 @end
 
 
-@implementation NSNull( PropertyListPrinting)
-
-- (void) jsonUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                       indent:(NSUInteger) indent
+void   MullePlistPrintNumberToStream( NSNumber *self, id <MulleObjCOutputStream> handle)
 {
-   [handle mulleWriteBytes:"null"
-                    length:4];
-}
-
-@end
-
-
-//
-// integer values are not dependent on locale so...
-//
-static void   printNumberToStream( NSNumber *self, id <MulleObjCOutputStream> handle)
-{
-   char                      tmp[ 64];
+   char                     tmp[ 64];
    struct mulle_asciidata   data;
 
    data = mulle_asciidata_make( tmp, sizeof( tmp));
@@ -132,87 +120,118 @@ static void   printNumberToStream( NSNumber *self, id <MulleObjCOutputStream> ha
 }
 
 
-@implementation _MulleObjCUInt64Number( PropertyListPrinting)
 
-- (void) propertyListUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                               indent:(NSUInteger) indent
+@implementation NSNumber( PropertyListPrinting)
+
+- (void) mullePrintPlist:(struct MulleObjCPrintPlistContext *) ctxt
 {
-   printNumberToStream( self, handle);
+   MullePlistPrintNumberToStream( self, ctxt->handle);
 }
 
-- (void) jsonUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                       indent:(NSUInteger) indent
+- (void) mullePrintJSON:(struct MulleObjCPrintPlistContext *) ctxt
 {
-   printNumberToStream( self, handle);
-}
-
-@end
-
-
-@implementation _MulleObjCUInt32Number( PropertyListPrinting)
-
-- (void) propertyListUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                               indent:(NSUInteger) indent
-{
-   printNumberToStream( self, handle);
-}
-
-- (void) jsonUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                       indent:(NSUInteger) indent
-{
-   printNumberToStream( self, handle);
-}
-
-@end
-
-
-@implementation _MulleObjCInt32Number( PropertyListPrinting)
-
-- (void) propertyListUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                               indent:(NSUInteger) indent
-{
-   printNumberToStream( self, handle);
-}
-
-- (void) jsonUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                       indent:(NSUInteger) indent
-{
-   printNumberToStream( self, handle);
-}
-
-@end
-
-
-@implementation _MulleObjCInt64Number( PropertyListPrinting)
-
-- (void) propertyListUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                               indent:(NSUInteger) indent
-{
-   printNumberToStream( self, handle);
-}
-
-- (void) jsonUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                       indent:(NSUInteger) indent
-{
-   printNumberToStream( self, handle);
+   MullePlistPrintNumberToStream( self, ctxt->handle);
 }
 
 @end
 
 
 
-@implementation _MulleObjCTaggedPointerIntegerNumber( PropertyListPrinting)
-
-- (void) propertyListUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                               indent:(NSUInteger) indent
+//
+// The core problem here is, that a double has no 1:1 representation with
+// many numbers like f.e. 0.8, the double value is really 0.80000000000000004.
+// If we parse a string "0.8" we get 0.80000000000000004 (ez to reproduce
+// in any debugger with "p 0.8". The 'next' higher possible number seems to be
+// 0.80000000000000016, the 'previous' lower is 0.79999999999999993.
+//
+// Values from 0.79999999999999999 to 0.80000000000000009
+// all parse to 0.80000000000000004
+//
+// There are two competing views here.
+//
+// a) I don't want plist to be lossy. Writing a double into a plist and
+//    reading back from it, must not change the value.
+//
+// b) I wrote a plist with { "a" = 0.8; }, but when I wrote it back it
+//    changed into { "a" = 0.80000000000000004; }, that's not as readable
+//    and not what I want.
+//
+// The "proper" solution would need to store a string representation of the
+// input along with NSNumber.
+//
+// I experimented here with printing the output first rounded, parsing it again
+// and then checking that the parsed value is the same as we had.
+//
+void   MullePListPrintFPNumberToStream( NSNumber *self,
+                                        id <MulleObjCOutputStream> handle)
 {
-   printNumberToStream( self, handle);
+   char          *type;
+   long double   lv1, lv2;
+   double        v1, v2;
+   char          buf[ 32];
+   int           len;
+
+   // TODO: need to set locale here ?
+   type = [self objCType];
+   switch( *type)
+   {
+   default :
+      abort();
+
+   case _C_FLT :
+      v1  = [self doubleValue];
+      len = sprintf( buf, "%0.7g", v1);
+      v2  = strtod( buf, NULL);
+      if( v1 != v2)
+         len = sprintf( buf, "%0.8g", v1);
+      break;
+
+   case _C_DBL :
+      v1  = [self doubleValue];
+      len = sprintf( buf, "%0.16g", v1);
+      v2  = strtod( buf, NULL);
+      if( v1 != v2)
+         len = sprintf( buf, "%0.17g", v1);
+      break;
+
+   case _C_LNG_DBL :
+      lv1 = [self longDoubleValue];
+      len = sprintf( buf, "%0.20Lg", lv1);
+      lv2 = strtold( buf, NULL);
+      if( lv1 != lv2)
+        len = sprintf( buf, "%0.21Lg", lv1);
+      break;
+   }
+   [handle mulleWriteBytes:buf
+                    length:len];
 }
 
-- (void) jsonUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                       indent:(NSUInteger) indent
+
+@implementation _MulleObjCDoubleNumber( PropertyListPrinting)
+
+- (void) mullePrintPlist:(struct MulleObjCPrintPlistContext *) ctxt
 {
-   printNumberToStream( self, handle);
+   MullePListPrintFPNumberToStream( self, ctxt->handle);
+}
+
+- (void) mullePrintJSON:(struct MulleObjCPrintPlistContext *) ctxt
+{
+   MullePListPrintFPNumberToStream( self, ctxt->handle);
+}
+
+@end
+
+
+@implementation _MulleObjCLongDoubleNumber( PropertyListPrinting)
+
+- (void) mullePrintPlist:(struct MulleObjCPrintPlistContext *) ctxt
+{
+   MullePListPrintFPNumberToStream( self, ctxt->handle);
+}
+
+- (void) mullePrintJSON:(struct MulleObjCPrintPlistContext *) ctxt
+{
+   MullePListPrintFPNumberToStream( self, ctxt->handle);
 }
 
 @end

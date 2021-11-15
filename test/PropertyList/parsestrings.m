@@ -14,9 +14,9 @@
 
 static void  parse_strings( NSDictionary *dict, BOOL expect)
 {
-   NSString       *s;
-   NSData         *data;
-   NSDictionary   *check;
+   NSString               *s;
+   NSData                 *data;
+   NSDictionary           *check;
    NSPropertyListFormat   format;
 
    s    = [dict descriptionInStringsFileFormat];
@@ -31,12 +31,22 @@ static void  parse_strings( NSDictionary *dict, BOOL expect)
    printf( "%s\n", [dict isEqual:check] == expect ? "PASS" : "FAIL");
    if( [dict isEqual:check] != expect)
    {
-      fprintf( stderr, "i: %s\n", dict ?  [[dict description] UTF8String] : "nil");
-      fprintf( stderr, "o: %s\n", check ? [[check description] UTF8String] : "nil");
-      fprintf( stderr, "d: %s\n", data ?  [[data description] UTF8String] : "nil");
+      mulle_fprintf( stderr, "s: %@\n", s);
+      mulle_fprintf( stderr, "i: %@\n", dict);
+      mulle_fprintf( stderr, "o: %@\n", check);
+      mulle_fprintf( stderr, "d: %@\n", data);
    }
 }
 
+
+// this is the output when run on MacOS
+//
+// "a" = "A";
+// "b" = "B";
+// "a.lf.b" = "A\nB";
+// "b" = 12;
+// "b" = (
+// );
 
 int main( int argc, const char * argv[])
 {

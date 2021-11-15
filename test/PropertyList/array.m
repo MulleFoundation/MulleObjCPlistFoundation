@@ -22,8 +22,9 @@ static void  code_decode( id value)
                                                  mutabilityOption:0
                                                            format:NULL
                                                  errorDescription:NULL];
-      printf( "%s->%s\n",
+      printf( "%s-> %.*s -> %s\n",
             [[value description] UTF8String],
+            (int) [data length], (char *) [data bytes],
             [[decoded description] UTF8String]);
    }
    @catch( NSException *exception)

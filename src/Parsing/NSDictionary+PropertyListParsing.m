@@ -59,15 +59,20 @@ NSDictionary   *_MulleObjCNewDictionaryFromPropertyListWithReader( _MulleObjCPro
    if( ! [reader isStringsPlist])
    {
       if (x != '{')
-         return( (id) _MulleObjCPropertyListReaderFail( reader, @"did not find dictionary (expected '{')"));
+         return( _MulleObjCPropertyListReaderFail( reader, @"did not find dictionary (expected '{')"));
 
       _MulleObjCPropertyListReaderConsumeCurrentUTF32Character( reader); // skip '{'
       x = _MulleObjCPropertyListReaderSkipWhiteAndComments( reader);
-
       if( x == '}')
       { // an empty dictionary
          _MulleObjCPropertyListReaderConsumeCurrentUTF32Character( reader); // skip '}'
          return( [reader->nsDictionaryClass new]); //
+      }
+
+      if( x == '(')
+      {
+         // it's a set, parse like array then consume last ')'
+         return( _MulleObjCPropertyListReaderFail( reader, @"can't do sets yet"));
       }
    }
 
@@ -86,15 +91,18 @@ NSDictionary   *_MulleObjCNewDictionaryFromPropertyListWithReader( _MulleObjCPro
          }
 
          if( key == reader->nsNull)
+         {
+            [key release];
             break;
+         }
 
          _MulleObjCPropertyListReaderSkipWhiteAndComments( reader);
          x = _MulleObjCPropertyListReaderCurrentUTF32Character( reader); // check 4 '='
          if( x != '=')
          {
-            [key release];
-            [result release];
-            return( (id) _MulleObjCPropertyListReaderFail( reader, @"expected '=' after key in dictionary"));
+            [key autorelease];
+            [result autorelease];
+            return( _MulleObjCPropertyListReaderFail( reader, @"expected '=' after initial key \"%@\" of dictionary", key));
          }
       }
       _MulleObjCPropertyListReaderConsumeCurrentUTF32Character( reader);
@@ -118,7 +126,7 @@ NSDictionary   *_MulleObjCNewDictionaryFromPropertyListWithReader( _MulleObjCPro
       NSCParameterAssert( ! [result objectForKey:key]);
 
       [result mulleSetRetainedObject:value
-                       forCopiedKey:key];
+                        forCopiedKey:key];
 
       _MulleObjCPropertyListReaderSkipWhiteAndComments( reader);
       x = _MulleObjCPropertyListReaderCurrentUTF32Character( reader); // check 4 ';}'
@@ -126,8 +134,8 @@ NSDictionary   *_MulleObjCNewDictionaryFromPropertyListWithReader( _MulleObjCPro
       {
          if( [reader isStringsPlist] || x != '}')  // lenient, can skip last ';' but then must get '}''
          {
-            [result release];
-            return( (id) _MulleObjCPropertyListReaderFail( reader, @"expected ';' after value in dictionary"));
+            [result autorelease];
+            return( _MulleObjCPropertyListReaderFail( reader, @"expected ';' after value for key \"%@\" in dictionary %@", key, result));
          }
       }
       else
@@ -139,7 +147,7 @@ NSDictionary   *_MulleObjCNewDictionaryFromPropertyListWithReader( _MulleObjCPro
       if( x == '}')
       {
          if( [reader isStringsPlist])
-            return( (id) _MulleObjCPropertyListReaderFail( reader, @"stray '}' in strings"));
+            return( _MulleObjCPropertyListReaderFail( reader, @"stray '}' in strings"));
 
          _MulleObjCPropertyListReaderConsumeCurrentUTF32Character( reader);
          break;
@@ -150,8 +158,8 @@ NSDictionary   *_MulleObjCNewDictionaryFromPropertyListWithReader( _MulleObjCPro
          if( [reader isStringsPlist])
             break;
 
-         [result release];
-         return( (id) _MulleObjCPropertyListReaderFail( reader, @"dictionary was not closed (expected '}')"));
+         [result autorelease];
+         return( _MulleObjCPropertyListReaderFail( reader, @"dictionary %@ was not closed (expected '}')", result));
       }
    }
 

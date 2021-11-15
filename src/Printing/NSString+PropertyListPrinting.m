@@ -45,14 +45,16 @@
 @implementation NSString ( PropertyListPrinting)
 
 
-- (void) propertyListUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                               indent:(NSUInteger) indent
+- (void) mullePrintPlist:(struct MulleObjCPrintPlistContext *) ctxt
 {
    NSString  *s;
-   NSData    *data;
 
-   s = [self mulleQuotedDescriptionIfNeeded];
-   [s mulleWriteToStream:handle
+   if( ctxt->alwaysQuotesStrings)
+      s = [self mulleQuotedString];
+   else
+      s = [self mulleQuotedDescriptionIfNeeded];
+
+   [s mulleWriteToStream:ctxt->handle
            usingEncoding:NSUTF8StringEncoding];
 }
 
@@ -60,20 +62,19 @@
 //
 // always in double quotes, different kind of escapes
 //
-- (void) jsonUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                       indent:(NSUInteger) indent
+- (void) mullePrintJSON:(struct MulleObjCPrintPlistContext *) ctxt
 {
    mulle_utf8_t             *s, *start;
    mulle_utf8_t             *q, *sentinel;
-   size_t                    len;
-   size_t                    size;
-   NSMutableData             *target;
+   size_t                   len;
+   size_t                   size;
+   NSMutableData            *target;
    struct mulle_utf8data    data;
-   mulle_utf8_t              tmp1[ 32];
-   mulle_utf8_t              tmp2[ 64];
+   mulle_utf8_t             tmp1[ 32];
+   mulle_utf8_t             tmp2[ 64];
 
    data = MulleStringGetUTF8Data( self, mulle_utf8data_make( tmp1,
-                                                              sizeof( tmp1)));
+                                                             sizeof( tmp1)));
 
    // do proper quoting and escaping
    len      = data.length;
@@ -121,8 +122,8 @@
    }
    *s++ = '"';
 
-   [handle mulleWriteBytes:start
-                    length:s - start];
+   [ctxt->handle mulleWriteBytes:start
+                          length:s - start];
 }
 
 
