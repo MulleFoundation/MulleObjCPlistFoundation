@@ -112,8 +112,13 @@ NSString   *
    }
 
    data = [[NSMutableData alloc] initWithLength:region.length];
+<<<<<<< HEAD
    buf  = (char *) [data bytes];
    dst  = MulleUTF8StringUnescape( (char *) region.bytes, region.length, buf);
+=======
+   buf  = (unsigned char *) [data bytes];
+   dst  = MulleUTF8StringUnescape( region.bytes, region.length, buf);
+>>>>>>> 0efe8fb5c737b53f311d3b7b663c14d8492bcaa7
    [data setLength:dst - buf];
 
    s = [[reader->nsStringClass alloc] initWithData:data

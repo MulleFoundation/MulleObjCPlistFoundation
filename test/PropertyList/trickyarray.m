@@ -13,7 +13,7 @@
 #endif
 
 
-
+// wasn't so tricky after all
 int   main( int argc, const char * argv[])
 {
    NSData                 *data;
