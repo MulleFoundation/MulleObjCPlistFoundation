@@ -113,10 +113,7 @@ char   *_MulleObjCPrintPlistContextUTF8Indentation( NSUInteger indent,
                                                     NSUInteger indentPerLevel,
                                                     NSUInteger indentChar);
 
-<<<<<<< HEAD
 MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
-=======
->>>>>>> 0efe8fb5c737b53f311d3b7b663c14d8492bcaa7
 void   MulleObjCPrintPlistContextWriteUTF8Indentation( struct MulleObjCPrintPlistContext *ctxt);
 
 //
