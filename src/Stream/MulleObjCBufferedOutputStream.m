@@ -53,13 +53,16 @@
 
 
 - (instancetype) initWithOutputStream:(id <MulleObjCOutputStream>) stream
-                          flushLength:(NSUInteger) length
+                           bufferSize:(NSUInteger) length
 {
-   length  += length / 4;
-   _stream  = [stream retain];
-   _data    = [[NSMutableData alloc] initWithLength:length];
+   NSParameterAssert( length >= 0x1 && length < 0x01000000);
 
-   self->_start    = (unsigned char *) [_data bytes];
+   _stream  = [stream retain];
+   _data    = [[NSMutableData alloc] initWithLength:length ? length : 0x4000];
+
+   self->_start = (unsigned char *) [_data bytes];
+   assert( self->_start);
+
    self->_current  = self->_start;
    self->_sentinel = &self->_start[ length];
 
@@ -70,7 +73,7 @@
 - (instancetype) initWithOutputStream:(id <MulleObjCOutputStream>) stream
 {
    return( [self initWithOutputStream:stream
-                          flushLength:0x4000]);
+                           bufferSize:0]);
 }
 
 
@@ -96,7 +99,7 @@
 
 - (void) dealloc
 {
-   [self flush];
+//   [self flush];  // for darwin ?
 
    [_data release];
 
@@ -112,6 +115,7 @@
    NSUInteger   fitLength;
 
    NSCParameterAssert( _stream);
+   assert( self->_current);
 
    if( len == -1)
       len = strlen( bytes);

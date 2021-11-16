@@ -20,6 +20,8 @@ old/
 src.old/
 tmp/
 xcuserdata/
+*.gcno
+*.profraw
 
 environment-host-*.sh
 environment-user-*.sh

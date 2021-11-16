@@ -59,13 +59,14 @@ MULLE_OBJC_UTF8_STREAM_READER_IVAR_VISIBILITY
 
 @property( assign) BOOL         decodesComments;
 @property( assign) NSUInteger   errorHandling;     // if failing
+@property( copy) NSString       *filename;         // used for error messages
 
 
 - (instancetype) initWithString:(NSString *) s;
 - (instancetype) initWithBufferedInputStream:(MulleObjCBufferedInputStream *) stream;
 
 - (void) bookmark;
-- (NSData *) bookmarkedData;
-- (MulleObjCMemoryRegion) bookmarkedRegion;
+- (NSData *) extractBookmarkedData;
+- (MulleObjCMemoryRegion) extractBookmarkedRegion;
 
 @end

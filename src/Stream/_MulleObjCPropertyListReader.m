@@ -53,7 +53,9 @@
    nsDictionaryClass = [NSMutableDictionary class];
    nsStringClass     = [NSString class];
    nsDataClass       = [NSData class];
+   nsDateClass       = [NSDate class];
    nsNull            = [[NSNull null] retain];
+   _stringEncoding   = NSUTF8StringEncoding;
    return( self);
 }
 
@@ -92,6 +94,9 @@ BOOL   _MulleObjCPropertyListReaderIsUnquotedStringEndChar(
 {
    // mostly compatible to Apple (which is good for us)
    // except, that we support +-. Ee  for doubles
+   if( [reader decodesNull] && _c == '_')
+      return ( NO);
+
    if( [reader decodesPBX] &&
          (
             _c  == '_' ||
@@ -123,6 +128,12 @@ BOOL  _MulleObjCPropertyListReaderIsUnquotedStringStartChar(
 {
    // mostly compatible to Apple (which is good for us)
    // except, that we support +-. Ee  for doubles
+   if( [reader decodesNull] && _c == '_')
+      return ( YES);
+
+   if( [reader decodesDate] && _c == '^')
+      return ( YES);
+
    if( [reader decodesPBX] &&
          (
             _c == '_' ||

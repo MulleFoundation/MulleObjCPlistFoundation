@@ -37,4 +37,5 @@
 #import "NSObject+PropertyListParsing.h"
 
 
+MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
 NSData   *_MulleObjCNewDataFromPropertyListWithReader( _MulleObjCPropertyListReader *reader);

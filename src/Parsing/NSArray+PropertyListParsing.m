@@ -76,9 +76,14 @@ NSArray   *_MulleObjCNewArrayFromPropertyListWithReader( _MulleObjCPropertyListR
          [result autorelease];  // NSParse already complained
          return( nil);
       }
-      // this is ,)  it happens with pbxproj...
-      if( element != reader->nsNull)
+
+      //
+      // this can be ,)  it happens with pbxproj...
+      //
+      if( element != reader->nsNull || [reader decodesNull])
          [result mulleAddRetainedObject:element];
+      else
+         [element release];
 
       _MulleObjCPropertyListReaderSkipWhiteAndComments( reader);
       x = _MulleObjCPropertyListReaderCurrentUTF32Character( reader); // check 4 ')'
@@ -93,6 +98,8 @@ NSArray   *_MulleObjCNewArrayFromPropertyListWithReader( _MulleObjCPropertyListR
          _MulleObjCPropertyListReaderConsumeCurrentUTF32Character( reader);
          break;
       }
+      if( x < 0)
+         return( _MulleObjCPropertyListReaderFail( reader, @"missing ')' after array"));
 
       [result autorelease];
       return( _MulleObjCPropertyListReaderFail( reader, x < 0

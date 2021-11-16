@@ -75,7 +75,7 @@
       if( [value __isNSString])
          valueDescription = [value mulleQuotedString];
       else
-         valueDescription = [value description];  // sic will print unquoted ... lol
+         valueDescription = [value description];  // sic will print unquoted ... compatible!
 
       [s appendString:[[key description] mulleQuotedString]];
       [s appendString:@" = "];

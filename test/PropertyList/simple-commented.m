@@ -16,7 +16,7 @@ static void  decode( NSString *s)
 
    @try
    {
-      format  = MullePropertyListLooseOpenStepFormat;
+      format  = MullePropertyListPBXFormat;
       data    = [s dataUsingEncoding:NSUTF8StringEncoding];
       decoded = [NSPropertyListSerialization mullePropertyListFromData:data
                                                       mutabilityOption:0

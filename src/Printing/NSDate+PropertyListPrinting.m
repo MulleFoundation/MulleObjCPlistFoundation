@@ -45,40 +45,39 @@
 // std-c and dependencies
 
 
-NSString      *_MulleObjCPropertyListCanonicalPrintingCalendarFormat =  @"%Y.%m.%d %H:%M:%S:%F";
-// always GMT!
-NSTimeZone    *_MulleObjCPropertyListCanonicalPrintingTimeZone;
-
-
-
-NSString      *_MulleObjCJSONCanonicalPrintingCalendarFormat = @"%d.%m.%Y %H:%M:%S.%F";
-// always GMT!
-NSTimeZone    *_MulleObjCJSONCanonicalPrintingTimeZone;
-
-
 
 @implementation NSDate( PropertyListPrinting)
 
-
-- (NSData *) propertyListUTF8DataWithIndent:(NSUInteger) indent
+// NSData is <>
+// NSArray is ()
+// NSDictionary is {}
+// NSSet is {( )}
+// NSDate formatted as <@ @> why not
+//
+- (void) mullePrintPlist:(struct MulleObjCPrintPlistContext *) ctxt
 {
    NSString   *s;
 
-   s = [self descriptionWithCalendarFormat:_MulleObjCPropertyListCanonicalPrintingCalendarFormat
-                                  timeZone:_MulleObjCPropertyListCanonicalPrintingTimeZone
-                                    locale:_MulleObjCPropertyListCanonicalPrintingLocale];
-   return( [s propertyListUTF8DataWithIndent:indent]);
+   s = [ctxt->dateFormatter stringForObjectValue:self];
+   if( ctxt->usesExtensions)
+      [ctxt->handle mulleWriteUTF8String:"<@"];
+   else
+      s = [s mulleQuotedString];
+   [s mulleWriteToStream:ctxt->handle
+           usingEncoding:NSUTF8StringEncoding];
+
+   if( ctxt->usesExtensions)
+      [ctxt->handle mulleWriteUTF8String:"@>"];
 }
 
 
-- (NSData *) jsonUTF8DataWithIndent:(NSUInteger) indent
+- (void) mullePrintJSON:(struct MulleObjCPrintPlistContext *) ctxt
 {
    NSString   *s;
 
-   s = [self descriptionWithCalendarFormat:_MulleObjCJSONCanonicalPrintingCalendarFormat
-                                  timeZone:_MulleObjCJSONCanonicalPrintingTimeZone
-                                    locale:_MulleObjCJSONCanonicalPrintingLocale];
-   return( [s propertyListUTF8DataWithIndent:indent]);
+   s = [ctxt->dateFormatter stringForObjectValue:self];
+   [s mulleWriteToStream:ctxt->handle
+           usingEncoding:NSUTF8StringEncoding];
 }
 
 

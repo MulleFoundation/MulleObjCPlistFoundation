@@ -60,7 +60,7 @@ MULLE_OBJC_BUFFERED_INPUT_STREAM_IVAR_VISIBILITY      // allow public access for
    unsigned char   *_current;
    unsigned char   *_sentinel;
 
-   unsigned char   *_bookmark;
+   NSUInteger      _bookmark;
    NSMutableData   *_bookmarkData;
 }
 
@@ -71,10 +71,11 @@ MULLE_OBJC_BUFFERED_INPUT_STREAM_IVAR_VISIBILITY      // allow public access for
 
 // you can only set one bookmark
 - (void) bookmark;
+- (void) clearBookmark;
 
 // this returns the bookmark and clears it. use bytes before getting next
 // character...
-- (MulleObjCMemoryRegion) bookmarkedRegion;   // usually better
-- (NSData *) bookmarkedData;            // use if you want a NSData anyway
+- (MulleObjCMemoryRegion) extractBookmarkedRegion;   // usually better
+- (NSData *) extractBookmarkedData;           // use if you want a NSData anyway
 
 @end

@@ -39,6 +39,13 @@
 #import "_MulleObjCUTF8StreamReader+InlineAccessors.h"
 
 
+
+static inline void
+   _MulleObjCPropertyListReaderBookmarkAtOffset( _MulleObjCPropertyListReader *self, NSInteger offset)
+{
+   MulleObjCUTF8StreamReaderBookmarkAtOffset( (MulleObjCUTF8StreamReader *) self, offset);
+}
+
 static inline void
    _MulleObjCPropertyListReaderBookmark( _MulleObjCPropertyListReader *self)
 {
@@ -57,13 +64,6 @@ static inline long
    _MulleObjCPropertyListReaderCurrentUTF32Character( _MulleObjCPropertyListReader *self)
 {
    return( MulleObjCUTF8StreamReaderCurrentUTF32Character( (MulleObjCUTF8StreamReader *) self));
-}
-
-
-static inline long
-   __NSPropertyListReaderNextUTF32Character( _MulleObjCPropertyListReader *self)
-{
-   return( __MulleObjCUTF8StreamReaderNextUTF32Character( (MulleObjCUTF8StreamReader *) self));
 }
 
 
@@ -127,7 +127,7 @@ static inline long
 }
 
 
-static inline void   *
+static inline id
    _MulleObjCPropertyListReaderFail( _MulleObjCPropertyListReader *self,
                                      NSString *format, ...)
 {
@@ -139,11 +139,13 @@ static inline void   *
 
    va_end( args);
 
-   return( NULL);
+   return( nil);
 }
 
-
-extern BOOL   _MulleObjCPropertyListReaderIsUnquotedStringEndChar(
+MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
+BOOL   _MulleObjCPropertyListReaderIsUnquotedStringEndChar(
             _MulleObjCPropertyListReader *reader, long _c);
-extern BOOL   _MulleObjCPropertyListReaderIsUnquotedStringStartChar(
+
+MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
+BOOL   _MulleObjCPropertyListReaderIsUnquotedStringStartChar(
          _MulleObjCPropertyListReader *reader, long _c);

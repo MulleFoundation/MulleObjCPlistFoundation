@@ -1,0 +1,8 @@
+{
+    Review = {
+        attributeNames = ( "movieID", "review", "reviewID", "reviewer" );
+        rows = (
+
+        );
+    };
+}

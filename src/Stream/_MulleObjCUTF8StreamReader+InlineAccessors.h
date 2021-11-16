@@ -43,9 +43,13 @@
 #include <ctype.h>
 
 
+MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
 void   MulleObjCUTF8StreamReaderFailV( MulleObjCUTF8StreamReader *self, NSString *format, va_list args);
 
+MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
 long   __MulleObjCUTF8StreamReaderComposeUTF32Character( MulleObjCUTF8StreamReader *self, unsigned char x);
+
+MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
 long   __MulleObjCUTF8StreamReaderUnescapedNextUTF32Character( MulleObjCUTF8StreamReader *self);
 
 //
@@ -54,7 +58,18 @@ long   __MulleObjCUTF8StreamReaderUnescapedNextUTF32Character( MulleObjCUTF8Stre
 // be the character behind it. It can not be a '/' as this would be the
 // comment. So this is easy, though inconvenient, to test against.
 //
+MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
 long   MulleObjCUTF8StreamReaderSkipWhiteAndComments( MulleObjCUTF8StreamReader *_self);
+
+
+static inline void
+   MulleObjCUTF8StreamReaderBookmarkAtOffset( MulleObjCUTF8StreamReader *_self, NSInteger offset)
+{
+   struct { @defs( MulleObjCUTF8StreamReader); }  *self = (void *) _self;
+
+   MulleObjCBufferedInputStreamBookmarkAtOffset( self->_stream, offset);
+}
+
 
 static inline void
    MulleObjCUTF8StreamReaderBookmark( MulleObjCUTF8StreamReader *_self)
@@ -98,25 +113,17 @@ static inline long
 
 
 static inline long
-   __MulleObjCUTF8StreamReaderNextUTF32Character( MulleObjCUTF8StreamReader *_self)
-{
-   struct { @defs( MulleObjCUTF8StreamReader); }  *self = (void *) _self;
-
-   self->_current = MulleObjCBufferedInputStreamNextCharacter( self->_stream);
-
-   if( self->_current >= 128)
-      self->_current = __MulleObjCUTF8StreamReaderComposeUTF32Character( _self, (unsigned char) self->_current);
-   return( self->_current);
-}
-
-
-static inline long
    MulleObjCUTF8StreamReaderNextUTF32Character( MulleObjCUTF8StreamReader *_self)
 {
    struct { @defs( MulleObjCUTF8StreamReader); }  *self = (void *) _self;
 
-   self->_lineNr += self->_current == '\n';
-   return( __MulleObjCUTF8StreamReaderNextUTF32Character( _self));
+   self->_lineNr += (self->_current == '\n');
+   self->_current = MulleObjCBufferedInputStreamNextCharacter( self->_stream);
+
+   if( self->_current >= 128)
+      self->_current = __MulleObjCUTF8StreamReaderComposeUTF32Character( _self,
+                                                                        (unsigned char) self->_current);
+   return( self->_current);
 }
 
 
@@ -128,7 +135,8 @@ static inline void
    self->_current = MulleObjCBufferedInputStreamNextCharacter( self->_stream);
 
    if( self->_current >= 128)
-      self->_current = __MulleObjCUTF8StreamReaderComposeUTF32Character( _self, (unsigned char) self->_current);
+      self->_current = __MulleObjCUTF8StreamReaderComposeUTF32Character( _self,
+                                                                         (unsigned char) self->_current);
 }
 
 

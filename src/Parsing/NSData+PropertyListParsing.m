@@ -105,10 +105,18 @@ NSData   *_MulleObjCNewDataFromPropertyListWithReader( _MulleObjCPropertyListRea
 
    _MulleObjCPropertyListReaderConsumeCurrentUTF32Character( reader); // skip '<'
    x = _MulleObjCPropertyListReaderSkipWhiteAndComments( reader);
-   if( x == '>')
+   switch( x)
    {
+   case '>' :
       _MulleObjCPropertyListReaderConsumeCurrentUTF32Character( reader); // skip '<'
       return( [reader->nsDataClass new]);
+
+   case '@' :
+      return( _MulleObjCPropertyListReaderFail( reader, @"can't do dates yet"));
+
+   default :
+      if( x < 0)
+         return( _MulleObjCPropertyListReaderFail( reader, @"missing '>' after NSData"));
    }
 
    [reader bookmark];
@@ -119,7 +127,11 @@ NSData   *_MulleObjCNewDataFromPropertyListWithReader( _MulleObjCPropertyListRea
 
    x = _MulleObjCPropertyListReaderCurrentUTF32Character( reader);
    if( x != '>')
-      return( (id) _MulleObjCPropertyListReaderFail( reader, @"unexpected garbage at end of NSData"));
+   {
+      if( x < 0)
+         return( _MulleObjCPropertyListReaderFail( reader, @"missing '>' after NSData"));
+      return( _MulleObjCPropertyListReaderFail( reader, @"unexpected garbage (%c) at end of NSData", (int) x));
+   }
 
    _MulleObjCPropertyListReaderConsumeCurrentUTF32Character( reader); // skip '>'
 

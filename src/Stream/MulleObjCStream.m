@@ -52,6 +52,12 @@ PROTOCOLCLASS_IMPLEMENTATION( MulleObjCOutputStream)
                   length:[data length]];
 }
 
+- (void) mulleWriteUTF8String:(char *) s;
+{
+   [self mulleWriteBytes:s
+                  length:-1];
+}
+
 PROTOCOLCLASS_END();
 
 
@@ -162,8 +168,8 @@ void   MulleStringWriteToStreamUsingEncoding( NSString *self,
    switch( encoding)
    {
    default :
-      MulleObjCThrowInvalidArgumentExceptionCString( "encoding %s (%ld) is not supported",
-         MulleStringEncodingCStringDescription( encoding),
+      MulleObjCThrowInvalidArgumentExceptionUTF8String( "encoding %s (%ld) is not supported",
+         MulleStringEncodingUTF8String( encoding),
          (long) encoding);
 
    case NSASCIIStringEncoding  :
@@ -175,7 +181,7 @@ void   MulleStringWriteToStreamUsingEncoding( NSString *self,
       }
       data = [self _asciiData];
       if( ! data)
-         MulleObjCThrowInvalidArgumentExceptionCString( "Can not convert this string to ASCII");
+         MulleObjCThrowInvalidArgumentExceptionUTF8String( "Can not convert this string to ASCII");
       break;
 
    case NSUTF8StringEncoding  :

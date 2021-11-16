@@ -40,7 +40,10 @@
 
 
 // don't inline these and don't call'em yourself
+MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
 int    MulleObjCBufferedInputStreamFillBufferAndNextCharacter( MulleObjCBufferedInputStream *self);
+
+MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
 MulleObjCMemoryRegion   MulleObjCBufferedInputStreamBookmarkedRegion( MulleObjCBufferedInputStream *self);
 
 // keep as small as possible for inlining
@@ -90,7 +93,14 @@ static inline size_t  MulleObjCBufferedInputStreamBytesAvailable( MulleObjCBuffe
 }
 
 
-static inline void  MulleObjCBufferedInputStreamBookmark( MulleObjCBufferedInputStream *_self)
+//
+// The bookmark is just behind the current character.
+// this is necessary for composed characters, where we read multiple chars.
+// It possible that there is not data yet. The initial bookmark is set
+// to -1.
+//
+static inline void  MulleObjCBufferedInputStreamBookmarkAtOffset( MulleObjCBufferedInputStream *_self,
+                                                                  NSInteger offset)
 {
    struct { @defs( MulleObjCBufferedInputStream); }  *self = (void *) _self;
 
@@ -99,5 +109,15 @@ static inline void  MulleObjCBufferedInputStreamBookmark( MulleObjCBufferedInput
       [self->_bookmarkData release];
       self->_bookmarkData = nil;
    }
-   self->_bookmark = self->_current;
+
+   // it's ok if self->_current is NULL it can happen if nothing has
+   // been read yet, yet we still want to bookmark
+   self->_bookmark  = (self->_current - (unsigned char *) [self->_data bytes]);
+   self->_bookmark += offset;
+}
+
+
+static inline void  MulleObjCBufferedInputStreamBookmark( MulleObjCBufferedInputStream *_self)
+{
+   MulleObjCBufferedInputStreamBookmarkAtOffset( _self, 0);
 }

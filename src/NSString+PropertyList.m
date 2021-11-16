@@ -44,14 +44,18 @@
 
 - (id) propertyList
 {
-   NSData     *data;
-   id         plist;
-   NSString   *errorDescription;
+   NSData                  *data;
+   id                      plist;
+   NSString                *errorDescription;
+   NSPropertyListFormat    format;
+
+   // no need to be super strict on input or ?
+   format = MullePropertyListLoosePlistFormat;
 
    data  = [self dataUsingEncoding:NSUTF8StringEncoding];
    plist = [NSPropertyListSerialization propertyListFromData:data
                                             mutabilityOption:0
-                                                      format:NULL
+                                                      format:&format
                                             errorDescription:&errorDescription];
    if( ! plist)
       [NSException raise:NSParseErrorException

@@ -20,7 +20,7 @@ static void  code_decode( id value)
 
    @try
    {
-      format  = MullePropertyListLooseOpenStepFormat;
+      format  = MullePropertyListPBXFormat;
       data    = [value dataUsingEncoding:NSUTF8StringEncoding];
       decoded = [NSPropertyListSerialization mullePropertyListFromData:data
                                                       mutabilityOption:0
@@ -52,9 +52,11 @@ int main(int argc, const char * argv[])
    code_decode( @"NOT_QUOTED_THOUGH_UNDERSCORE");
 #endif
 
-#if 0
-//   code_decode( @"{ settings = {ATTRIBUTES = (Public,); }; };");
-//   code_decode( @"ATTRIBUTES = (Public, );");
+#if 1
+   code_decode( @"{ settings = {ATTRIBUTES = (Public,); }; };");
+#endif
+   code_decode( @"ATTRIBUTES = (Public, );");
+#if 1
    code_decode( @""
 "{\n"
 "   41F6FBAF1BC3FE99000C60B2 =\n"

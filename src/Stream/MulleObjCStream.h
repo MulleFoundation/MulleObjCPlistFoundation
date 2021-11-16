@@ -58,6 +58,7 @@ PROTOCOLCLASS_INTERFACE( MulleObjCOutputStream, NSObject)
 
 @optional
 - (void) writeData:(NSData *) data;
+- (void) mulleWriteUTF8String:(char *) s;
 
 PROTOCOLCLASS_END();
 
@@ -101,3 +102,15 @@ PROTOCOLCLASS_END();
 - (void) mulleWriteAsUTF8ToStream:(id <MulleObjCOutputStream>) stream;
 
 @end
+
+
+//
+// It's assumed that the compiler will call strlen at compiletime.
+//
+static inline void
+   MulleObjCOutputStreamWriteUTF8String( id <MulleObjCOutputStream> stream,
+                                         char *s)
+{
+   [stream mulleWriteBytes:s
+                    length:strlen( s)];
+}

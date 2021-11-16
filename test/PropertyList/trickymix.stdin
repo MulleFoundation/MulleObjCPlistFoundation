@@ -1,0 +1,1 @@
+{ databaseName="/home/vm/h.sqlite"; pragmas = ( "synchronous = OFF", "journal_mode = MEMORY"); }

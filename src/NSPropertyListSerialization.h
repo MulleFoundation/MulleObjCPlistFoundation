@@ -57,13 +57,14 @@ typedef enum
 
 enum
 {
-    NSPropertyListOpenStepFormat          = 1,   // no comments, no unquoted $ _ /
-    MullePropertyListLooseOpenStepFormat  = 2,   // with wily Apple extensions
+   NSPropertyListOpenStepFormat      = 1,   // no comments, no unquoted $ _ /
+   MullePropertyListLoosePlistFormat = 2,   // with wily Mulle extensions
+   MullePropertyListPBXFormat        = 3,   // with wily Apple extensions
 //    MullePropertyListGNUstepFormat        = 4, // future
 //    MullePropertyListFormat               = 5, // future
-    MullePropertyListJSONFormat           = 6,   // read, with jsmn
-    NSPropertyListXMLFormat_v1_0          = 100, // read, support with expat
-    NSPropertyListBinaryFormat_v1_0       = 200  // no support
+   MullePropertyListJSONFormat       = 6,   // read, with jsmn
+   NSPropertyListXMLFormat_v1_0      = 100, // read, support with expat
+   NSPropertyListBinaryFormat_v1_0   = 200  // no support
 };
 
 
@@ -71,13 +72,13 @@ typedef NSUInteger   NSPropertyListFormat;
 
 
 typedef NSUInteger   NSPropertyListReadOptions;
-typedef NSUInteger   NSPropertyListWriteOptions;
+typedef NSUInteger   NSPropertyListWriteOptions;  // always 0 now
 
 
 enum MullePropertyListFormatOption
 {
    MullePropertyListFormatOptionDetect = 0,
-   MullePropertyListFormatOptionPrefer = 1,  // used to prefer MullePropertyListLooseOpenStepFormat over NSPropertyListOpenStepFormat
+   MullePropertyListFormatOptionPrefer = 1,  // used to prefer MullePropertyListLoosePlistFormat over NSPropertyListOpenStepFormat
    MullePropertyListFormatOptionForce  = 2   // will only load of that type (or preference)
 };
 
@@ -92,6 +93,13 @@ enum MullePropertyListFormatOption
 + (void) mulleAddPrintMethod:(SEL) method
        forPropertyListFormat:(NSPropertyListFormat) format;
 
+
+
++ (BOOL) propertyList:(id) plist
+     isValidForFormat:(NSPropertyListFormat) format;
+
+
+// convert objects into plist data
 + (NSData *) dataFromPropertyList:(id) plist
                            format:(NSPropertyListFormat) format
                  errorDescription:(NSString **) errorString;
@@ -101,18 +109,15 @@ enum MullePropertyListFormatOption
                           options:(NSPropertyListWriteOptions) options
                             error:(NSError **) p_error;
 
-
-+ (BOOL) propertyList:(id) plist
-     isValidForFormat:(NSPropertyListFormat) format;
-
 //
-// You can state a preference for MullePropertyListLooseOpenStepFormat by
-// passing this via format. This will enable the parsing of numbers and dates in
+// You can state a preference for MullePropertyListLoosePlistFormat by
+// passing this via format. This will enable the parsing of numbers and dates
+// and NSNull as __NSNULL__ in
 // their proper classes. (dates not yet).
 //
 // So if you pass something as format, initialize to zero to not get a random
 //  preference!!
-// e.g. format = MullePropertyListLooseOpenStepFormat; ...
+// e.g. format = MullePropertyListLoosePlistFormat; ...
 //
 // [NSPropertyListSerialization propertyListFromData:data
 //                                  mutabilityOption:0
@@ -121,6 +126,9 @@ enum MullePropertyListFormatOption
 //
 
 // TODO: FIX ERROR HANDLING, USE NSERROR OR NSEXCEPTION exlusively
+
+// parse objects from plist data
+
 + (id) mullePropertyListFromData:(NSData *) data
                 mutabilityOption:(NSPropertyListMutabilityOptions) opt
                           format:(NSPropertyListFormat *) format
@@ -131,12 +139,11 @@ enum MullePropertyListFormatOption
                      format:(NSPropertyListFormat *) format
            errorDescription:(NSString **) errorString;
 
+// one does options:format: the other format:options: not my fault...
 + (id) propertyListWithData:(NSData *) data
                     options:(NSPropertyListMutabilityOptions) opt
                      format:(NSPropertyListFormat *) p_format
                       error:(NSError **) p_error;
-
-
 
 @end
 

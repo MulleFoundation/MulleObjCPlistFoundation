@@ -38,10 +38,19 @@ int main(int argc, const char * argv[])
    int   i;
 
    for( i = 7; i <= 13; i++)
-      code_decode( @{ [NSNumber numberWithDouble:(double) i / 10]: [NSString stringWithFormat:@"%c", i] });
+      code_decode( @{
+                      [NSNumber numberWithDouble:(double) i / 10]:
+                      [NSString stringWithFormat:@"%c", i]
+                    });
    for( i = 27; i <= 27; i++)
-      code_decode( @{ [NSNumber numberWithDouble:(double) i / 10]: [NSString stringWithFormat:@"%c", i] });
+      code_decode( @{
+                      [NSNumber numberWithDouble:(double) i / 10]:
+                      [NSString stringWithFormat:@"%c", i]
+                    });
    for( i = 32; i <= 126; i++)
-      code_decode( @{ [NSNumber numberWithDouble:(double) i / 10]: [NSString stringWithFormat:@"%c", i] });
+      code_decode( @{
+                      [NSNumber numberWithDouble:(double) i / 10]:
+                      [NSString stringWithFormat:@"%c", i]
+                    });
    return( 0);
 }

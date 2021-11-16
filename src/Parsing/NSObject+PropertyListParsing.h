@@ -38,5 +38,8 @@
 
 @class _MulleObjCPropertyListReader;
 
+MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
 id   _MulleObjCNewFromPropertyListWithStreamReader( _MulleObjCPropertyListReader *reader);
+
+MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
 id   _MulleObjCNewObjectParsedUnquotedFromPropertyListWithReader( _MulleObjCPropertyListReader *reader);

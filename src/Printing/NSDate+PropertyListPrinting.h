@@ -36,15 +36,5 @@
 #import "MulleObjCPropertyListPrinting.h"
 
 
-@class NSTimeZone;
-
-
-extern NSString      *_MulleObjCPropertyListCanonicalPrintingCalendarFormat;
-extern NSTimeZone    *_MulleObjCPropertyListCanonicalPrintingTimeZone;
-
-extern NSString      *_MulleObjCJSONCanonicalPrintingCalendarFormat;
-extern NSTimeZone    *_MulleObjCJSONCanonicalPrintingTimeZone;
-
-
 @interface NSDate ( PropertyListPrinting) <MulleObjCPropertyListPrinting>
 @end

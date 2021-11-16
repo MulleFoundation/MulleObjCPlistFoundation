@@ -49,72 +49,73 @@
 #pragma clang diagnostic ignored "-Wobjc-root-class"
 
 
+void  MulleObjCPrintPlistContextSetHandle( struct MulleObjCPrintPlistContext *ctxt,
+                                           id <MulleObjCOutputStream> handle)
+{
+   ctxt->handle            = handle;
+   ctxt->writeBytes_length = [(id) handle methodForSelector:@selector( mulleWriteBytes:length:)];
+}
+
+
+void  MulleObjCPrintPlistContextInit( struct MulleObjCPrintPlistContext *ctxt,
+                                      id <MulleObjCOutputStream> handle)
+{
+   memset( ctxt, 0, sizeof( *ctxt));
+
+   MulleObjCPrintPlistContextSetHandle( ctxt, handle);
+   ctxt->dateFormatter     = [[[NSDateFormatter alloc] initWithDateFormat:MulleDateFormatISOWithMilliseconds
+                                                     allowNaturalLanguage:NO] autorelease];
+   ctxt->indentPerLevel    = 1;
+   ctxt->indentChar        = '\t';
+   ctxt->sortsDictionary   = YES;
+}
+
+
 PROTOCOLCLASS_IMPLEMENTATION( MulleObjCPropertyListPrinting)
 
-// these globals are supposed to set up by the Foundation and never
-// to be changed hence after
-
-unsigned int   _MulleObjCPropertyListUTF8DataIndentationPerLevel  = 1;
-char           _MulleObjCPropertyListUTF8DataIndentationCharacter = '\t';
-NSLocale       *_MulleObjCPropertyListCanonicalPrintingLocale;
-
-unsigned int   _MulleObjCJSONUTF8DataIndentationPerLevel  = 1;
-char           _MulleObjCJSONUTF8DataIndentationCharacter = '\t';
-NSLocale       *_MulleObjCJSONCanonicalPrintingLocale;
-
-
-- (void) propertyListUTF8DataToStream:(id <MulleObjCOutputStream>) handle
+- (void) mullePrintPlistToStream:(id <MulleObjCOutputStream>) handle;
 {
-   [self propertyListUTF8DataToStream:handle
-                               indent:0];
+   struct MulleObjCPrintPlistContext  ctxt;
+
+   MulleObjCPrintPlistContextInit( &ctxt, handle);
+
+   // though the NSDateFormatter class is known here, the actual
+   // implementations are in MulleObjCOSFoundation, so you need
+   // to link with OSFoundation or some other provider of
+   // formatter functionality
+   ctxt.dateFormatter = [[[NSDateFormatter alloc] initWithDateFormat:MulleDateFormatISO
+                                                allowNaturalLanguage:NO] autorelease];
+
+   [self mullePrintPlist:&ctxt];
 }
 
 
-- (void) jsonUTF8DataToStream:(id <MulleObjCOutputStream>) handle
+- (void) mullePrintLoosePlistToStream:(id <MulleObjCOutputStream>) handle
 {
-   [self jsonUTF8DataToStream:handle
-                       indent:0];
+   struct MulleObjCPrintPlistContext  ctxt;
+
+   MulleObjCPrintPlistContextInit( &ctxt, handle);
+   ctxt.dateFormatter = [[[NSDateFormatter alloc] initWithDateFormat:MulleDateFormatISOWithMilliseconds
+                                                allowNaturalLanguage:NO] autorelease];
+   ctxt.allowsNull          = YES;
+   ctxt.printsBool          = YES;
+
+   [self mullePrintPlist:&ctxt];
 }
 
 
-//
-// default calls propertyListUTF8DataWithIndent and write that out
-// subclasses overide this
-//
-- (void) propertyListUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                               indent:(NSUInteger) indent
+- (void) mullePrintJSONToStream:(id <MulleObjCOutputStream>) handle;
 {
-   NSData   *data;
+   struct MulleObjCPrintPlistContext  ctxt;
 
-   data = [self propertyListUTF8DataWithIndent:indent];
-   [handle writeData:data];
+   MulleObjCPrintPlistContextInit( &ctxt, handle);
+   ctxt.dateFormatter       = [[[NSDateFormatter alloc] initWithDateFormat:@"%d.%m.%Y %H:%M:%S.%F"
+                                                      allowNaturalLanguage:NO] autorelease];
+   ctxt.allowsNull          = YES;
+   ctxt.alwaysQuotesStrings = YES; // or ?
+
+   [self mullePrintJSON:&ctxt];
 }
-
-
-- (void) jsonUTF8DataToStream:(id <MulleObjCOutputStream>) handle
-                       indent:(NSUInteger) indent
-{
-   NSData   *data;
-
-   data = [self jsonUTF8DataWithIndent:indent];
-   [handle writeData:data];
-}
-
-
-//
-// Classes may be happy with just description (can't think of one :))
-//
-- (NSData *) propertyListUTF8DataWithIndent:(NSUInteger) indent
-{
-   return( [[(NSObject *) self description] dataUsingEncoding:NSUTF8StringEncoding]);
-}
-
-
-- (NSData *) jsonUTF8DataWithIndent:(NSUInteger) indent
-{
-   return( [[(NSObject *) self description] dataUsingEncoding:NSUTF8StringEncoding]);
-}
-
 
 
 - (NSString *) mullePropertyListDescription
@@ -123,8 +124,7 @@ NSLocale       *_MulleObjCJSONCanonicalPrintingLocale;
    NSString       *s;
 
    data = [NSMutableData data];
-   [self propertyListUTF8DataToStream:data
-                               indent:0];
+   [self mullePrintPlistToStream:data];
 
    s = [[[NSString alloc] initWithData:data
                               encoding:NSUTF8StringEncoding] autorelease];
@@ -138,8 +138,7 @@ NSLocale       *_MulleObjCJSONCanonicalPrintingLocale;
    NSString       *s;
 
    data = [NSMutableData data];
-   [self jsonUTF8DataToStream:data
-                       indent:0];
+   [self mullePrintJSONToStream:data];
 
    s = [[[NSString alloc] initWithData:data
                               encoding:NSUTF8StringEncoding] autorelease];
@@ -153,63 +152,55 @@ NSLocale       *_MulleObjCJSONCanonicalPrintingLocale;
 static char   tabs[]   = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
 static char   spaces[] = "                                                ";
 
-
-char   *MulleObjCPropertyListUTF8DataIndentation( NSUInteger level)
+char   *_MulleObjCPrintPlistContextUTF8Indentation( NSUInteger indent,
+                                                    NSUInteger indentPerLevel,
+                                                    NSUInteger indentChar)
 {
-   unsigned int    n;
-   size_t          size;
-   char            *s;
+   NSUInteger   n;
+   size_t       size;
+   char         *s;
 
-   if( ! level)
+   if( ! indent)
       return( "");
 
-   switch( _MulleObjCPropertyListUTF8DataIndentationCharacter)
+   switch( indentChar)
    {
    case '\t' : s = tabs;   size = sizeof( tabs) - 1;   break;
    case ' '  : s = spaces; size = sizeof( spaces) - 1; break;
    default   : s = NULL;   size = 0;                   break;
    }
 
-   n = level * _MulleObjCPropertyListUTF8DataIndentationPerLevel;
+   n = indent * indentPerLevel;
    // size is strlen
    if( n <= size)
       return( &s[ size - n]);
 
    s = MulleObjCCallocAutoreleased( n + 1, sizeof( char));
    memset( s,
-           _MulleObjCPropertyListUTF8DataIndentationCharacter,
+           indentChar,
            n);
    return( s);
 }
 
 
-char   *MulleObjCJSONUTF8DataIndentation( NSUInteger level)
+char   *MulleObjCPrintPlistContextUTF8Indentation( struct MulleObjCPrintPlistContext *ctxt)
 {
-   unsigned int    n;
-   size_t          size;
-   char            *s;
-
-   if( ! level)
-      return( "");
-
-   switch( _MulleObjCJSONUTF8DataIndentationCharacter)
-   {
-   case '\t' : s = tabs;   size = sizeof( tabs) - 1;   break;
-   case ' '  : s = spaces; size = sizeof( spaces) - 1; break;
-   default   : s = NULL;   size = 0;                   break;
-   }
-
-   n = level * _MulleObjCJSONUTF8DataIndentationPerLevel;
-   // size is strlen
-   if( n <= size)
-      return( &s[ size - n]);
-
-   s = MulleObjCCallocAutoreleased( n + 1, sizeof( char));
-   memset( s,
-           _MulleObjCJSONUTF8DataIndentationCharacter,
-           n);
-   return( s);
+   return( _MulleObjCPrintPlistContextUTF8Indentation( ctxt->indent,
+                                                       ctxt->indentPerLevel,
+                                                       ctxt->indentChar));
 }
+
+
+void   MulleObjCPrintPlistContextWriteUTF8Indentation( struct MulleObjCPrintPlistContext *ctxt)
+{
+   char   *s;
+
+   s = _MulleObjCPrintPlistContextUTF8Indentation( ctxt->indent,
+                                                   ctxt->indentPerLevel,
+                                                   ctxt->indentChar);
+   MulleObjCPrintPlistContextWriteUTF8String( ctxt, s);
+}
+
 
 PROTOCOLCLASS_END()
 

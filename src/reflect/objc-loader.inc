@@ -25,9 +25,6 @@
       { @selector( NSString), @selector( PropertyList) },      // 1994a171;NSString;827edd0f;PropertyList
       { @selector( NSString), @selector( PropertyListPrinting) },      // 1994a171;NSString;91aeee11;PropertyListPrinting
       { @selector( _MulleObjCBoolNumber), @selector( PropertyListPrinting) },      // 263c5445;_MulleObjCBoolNumber;91aeee11;PropertyListPrinting
-      { @selector( _MulleObjCInt32Number), @selector( PropertyListPrinting) },      // d69971a0;_MulleObjCInt32Number;91aeee11;PropertyListPrinting
-      { @selector( _MulleObjCInt64Number), @selector( PropertyListPrinting) },      // 8b4d5e19;_MulleObjCInt64Number;91aeee11;PropertyListPrinting
+      { @selector( _MulleObjCDoubleNumber), @selector( PropertyListPrinting) },      // ae25b758;_MulleObjCDoubleNumber;91aeee11;PropertyListPrinting
+      { @selector( _MulleObjCLongDoubleNumber), @selector( PropertyListPrinting) },      // 4ec38072;_MulleObjCLongDoubleNumber;91aeee11;PropertyListPrinting
       { @selector( _MulleObjCPropertyListReader), MULLE_OBJC_NO_CATEGORYID },      // a2dc8d79;_MulleObjCPropertyListReader;;
-      { @selector( _MulleObjCTaggedPointerIntegerNumber), @selector( PropertyListPrinting) },      // 1f557819;_MulleObjCTaggedPointerIntegerNumber;91aeee11;PropertyListPrinting
-      { @selector( _MulleObjCUInt32Number), @selector( PropertyListPrinting) },      // 92030c9c;_MulleObjCUInt32Number;91aeee11;PropertyListPrinting
-      { @selector( _MulleObjCUInt64Number), @selector( PropertyListPrinting) },      // c62e3ae1;_MulleObjCUInt64Number;91aeee11;PropertyListPrinting
