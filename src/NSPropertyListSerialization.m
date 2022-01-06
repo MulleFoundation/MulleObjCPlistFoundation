@@ -134,7 +134,7 @@ static struct
 
    [self mulleAddParserClass:self
                       method:@selector( mulleLooselyParsePropertyListData:)
-       forPropertyListFormat:MullePropertyListLoosePlistFormat];
+       forPropertyListFormat:MullePropertyListLooseFormat];
    [self mulleAddParserClass:self
                       method:@selector( mulleParsePropertyListData:)
        forPropertyListFormat:NSPropertyListOpenStepFormat];
@@ -143,7 +143,7 @@ static struct
        forPropertyListFormat:MullePropertyListPBXFormat];
 
    [self mulleAddPrintMethod:@selector( mullePrintLoosePlistToStream:)
-         forPropertyListFormat:MullePropertyListLoosePlistFormat];
+         forPropertyListFormat:MullePropertyListLooseFormat];
    [self mulleAddPrintMethod:@selector( mullePrintPlistToStream:)
          forPropertyListFormat:NSPropertyListOpenStepFormat];
 
@@ -266,7 +266,7 @@ NSString   *MulleStringFromPropertListFormatString( NSPropertyListFormat format)
    switch( format)
    {
    case NSPropertyListOpenStepFormat      : return( @"OpenStep");
-   case MullePropertyListLoosePlistFormat : return( @"Loose OpenStep");
+   case MullePropertyListLooseFormat : return( @"Loose OpenStep");
 //    MullePropertyListGNUstepFormat        = 4, // future
 //    MullePropertyListFormat               = 5, // future
    case MullePropertyListJSONFormat       : return( @"JSON");
@@ -313,7 +313,7 @@ NSString   *MulleStringFromPropertListFormatString( NSPropertyListFormat format)
    // sometimes ensure p_format wasn't forgotten to be initted
    assert( requestedFormat == 0
            || requestedFormat == NSPropertyListOpenStepFormat
-           || requestedFormat == MullePropertyListLoosePlistFormat
+           || requestedFormat == MullePropertyListLooseFormat
            || requestedFormat == MullePropertyListPBXFormat
            || requestedFormat == MullePropertyListJSONFormat
            || requestedFormat == NSPropertyListXMLFormat_v1_0
@@ -394,7 +394,7 @@ NSString   *MulleStringFromPropertListFormatString( NSPropertyListFormat format)
 
    // this is for backwards compatibility with older test code
    formatOption = MullePropertyListFormatOptionDetect;
-   if( p_format && *p_format == MullePropertyListLoosePlistFormat)
+   if( p_format && *p_format == MullePropertyListLooseFormat)
       formatOption = MullePropertyListFormatOptionPrefer;
 
    plist = [self mullePropertyListFromData:data
@@ -423,7 +423,7 @@ NSString   *MulleStringFromPropertListFormatString( NSPropertyListFormat format)
 
    // this is for backwards compatibility with older test code
    formatOption = MullePropertyListFormatOptionDetect;
-   if( p_format && *p_format == MullePropertyListLoosePlistFormat)
+   if( p_format && *p_format == MullePropertyListLooseFormat)
       formatOption = MullePropertyListFormatOptionPrefer;
 
    plist = [self mullePropertyListFromData:data

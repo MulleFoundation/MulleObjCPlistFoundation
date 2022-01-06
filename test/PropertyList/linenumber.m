@@ -19,7 +19,7 @@ int   main(int argc, const char * argv[])
    id                     decoded;
    NSPropertyListFormat   format;
 
-   format = MullePropertyListLoosePlistFormat;
+   format = MullePropertyListLooseFormat;
    @try
    {
       data    = [NSData dataWithBytes:text

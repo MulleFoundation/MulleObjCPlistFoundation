@@ -15,6 +15,10 @@ which looks like this:
 This library supports "plist". Add [MulleObjCJSMNFoundation](//github.com/MulleWeb/MulleObjCJSMNFoundation) for JSON
 or [MulleObjCExpatFoundation](//github.com/MulleFoundation/MulleObjCExpatFoundation) for XML.
 
+Though the MulleObjCPlistFoundation is "below" MulleObjCOSFoundation, you
+will likely need the MulleObjCOSFoundation for printing NSDates as it contains
+the NSDateFormatter subclasses.
+
 
 #### Classes
 
@@ -23,31 +27,12 @@ Class                         | Description
 `NSPropertyListSerialization` |
 
 
+
 ### You are here
 
-```
-   .-------------------------------------------------------------------.
-   | MulleFoundation                                                   |
-   '-------------------------------------------------------------------'
-   .----------------------------.
-   | Calendar                   |
-   '----------------------------'
-   .----------------------------.
-   | OS                         |
-   '----------------------------'
-           .====================..----------..-----..---------.
-           | Plist              || Archiver || KVC || Unicode |
-           '====================''----------''-----''---------'
-           .--------------------------------------------------..-------.
-           | Standard                                         || Math  |
-           '--------------------------------------------------''-------'
-   .------..-----------------------------..----------------------------.
-   | Lock || Container                   || Value                      |
-   '------''-----------------------------''----------------------------'
-   .-------------------------------------------------------------------.
-   | MulleObjC                                                         |
-   '-------------------------------------------------------------------'
-```
+![Overview](overview.dot.svg)
+
+
 
 ## Install
 

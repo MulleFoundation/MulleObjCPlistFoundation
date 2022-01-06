@@ -41,6 +41,9 @@
 // std-c and dependencies
 
 
+//
+// ugliness... make this thread local at the very least
+//
 BOOL   _MulleObjCPropertyListSortedDictionary;
 BOOL   _MulleObjCJSONSortedDictionary;
 

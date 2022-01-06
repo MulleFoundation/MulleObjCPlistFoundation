@@ -17,7 +17,7 @@ int   main(int argc, const char * argv[])
    NSPropertyListFormat   format;
    NSData                 *encoded;
 
-   format = MullePropertyListLoosePlistFormat;
+   format = MullePropertyListLooseFormat;
    @try
    {
       data    = [NSData dataWithBytes:text
@@ -29,7 +29,7 @@ int   main(int argc, const char * argv[])
       mulle_printf( "decoded: %@\n", decoded);
 
       encoded = [NSPropertyListSerialization dataWithPropertyList:decoded
-                                                           format:MullePropertyListLoosePlistFormat
+                                                           format:MullePropertyListLooseFormat
                                                           options:0
                                                             error:NULL];
       mulle_printf( "encoded: %.*s\n", (int) [encoded length], [encoded bytes]);

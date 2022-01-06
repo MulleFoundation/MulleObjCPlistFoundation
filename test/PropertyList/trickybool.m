@@ -21,7 +21,7 @@ int   main( int argc, const char * argv[])
    NSPropertyListFormat   format;
 
    data   = [[NSFileHandle fileHandleWithStandardInput] readDataToEndOfFile];
-   format = MullePropertyListLoosePlistFormat;
+   format = MullePropertyListLooseFormat;
    dict   = [NSPropertyListSerialization propertyListWithData:data
                                                       options:0
                                                        format:&format

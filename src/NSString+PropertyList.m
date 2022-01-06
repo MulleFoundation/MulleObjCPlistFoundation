@@ -50,7 +50,7 @@
    NSPropertyListFormat    format;
 
    // no need to be super strict on input or ?
-   format = MullePropertyListLoosePlistFormat;
+   format = MullePropertyListLooseFormat;
 
    data  = [self dataUsingEncoding:NSUTF8StringEncoding];
    plist = [NSPropertyListSerialization propertyListFromData:data

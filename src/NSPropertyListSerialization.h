@@ -58,7 +58,7 @@ typedef enum
 enum
 {
    NSPropertyListOpenStepFormat      = 1,   // no comments, no unquoted $ _ /
-   MullePropertyListLoosePlistFormat = 2,   // with wily Mulle extensions
+   MullePropertyListLooseFormat = 2,   // with wily Mulle extensions
    MullePropertyListPBXFormat        = 3,   // with wily Apple extensions
 //    MullePropertyListGNUstepFormat        = 4, // future
 //    MullePropertyListFormat               = 5, // future
@@ -78,7 +78,7 @@ typedef NSUInteger   NSPropertyListWriteOptions;  // always 0 now
 enum MullePropertyListFormatOption
 {
    MullePropertyListFormatOptionDetect = 0,
-   MullePropertyListFormatOptionPrefer = 1,  // used to prefer MullePropertyListLoosePlistFormat over NSPropertyListOpenStepFormat
+   MullePropertyListFormatOptionPrefer = 1,  // used to prefer MullePropertyListLooseFormat over NSPropertyListOpenStepFormat
    MullePropertyListFormatOptionForce  = 2   // will only load of that type (or preference)
 };
 
@@ -110,14 +110,14 @@ enum MullePropertyListFormatOption
                             error:(NSError **) p_error;
 
 //
-// You can state a preference for MullePropertyListLoosePlistFormat by
+// You can state a preference for MullePropertyListLooseFormat by
 // passing this via format. This will enable the parsing of numbers and dates
 // and NSNull as __NSNULL__ in
 // their proper classes. (dates not yet).
 //
 // So if you pass something as format, initialize to zero to not get a random
 //  preference!!
-// e.g. format = MullePropertyListLoosePlistFormat; ...
+// e.g. format = MullePropertyListLooseFormat; ...
 //
 // [NSPropertyListSerialization propertyListFromData:data
 //                                  mutabilityOption:0
