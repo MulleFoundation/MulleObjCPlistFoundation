@@ -1,6 +1,9 @@
 ## 0.20.0
 
-* Various small improvements
+* `MullePropertyListLooseOpenStepFormat` is now `MullePropertyListLooseOpenStepFormat`
+* added `MullePropertyListLooseOpenStepFormat`
+* improved plist parsing
+* improved plist printing
 
 
 ## 0.19.0
