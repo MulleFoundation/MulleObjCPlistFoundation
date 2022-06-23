@@ -142,10 +142,10 @@ static inline id
    return( nil);
 }
 
-MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
+MULLE_OBJC_PLIST_FOUNDATION_GLOBAL
 BOOL   _MulleObjCPropertyListReaderIsUnquotedStringEndChar(
             _MulleObjCPropertyListReader *reader, long _c);
 
-MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
+MULLE_OBJC_PLIST_FOUNDATION_GLOBAL
 BOOL   _MulleObjCPropertyListReaderIsUnquotedStringStartChar(
          _MulleObjCPropertyListReader *reader, long _c);

@@ -43,13 +43,13 @@
 #include <ctype.h>
 
 
-MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
+MULLE_OBJC_PLIST_FOUNDATION_GLOBAL
 void   MulleObjCUTF8StreamReaderFailV( MulleObjCUTF8StreamReader *self, NSString *format, va_list args);
 
-MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
+MULLE_OBJC_PLIST_FOUNDATION_GLOBAL
 long   __MulleObjCUTF8StreamReaderComposeUTF32Character( MulleObjCUTF8StreamReader *self, unsigned char x);
 
-MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
+MULLE_OBJC_PLIST_FOUNDATION_GLOBAL
 long   __MulleObjCUTF8StreamReaderUnescapedNextUTF32Character( MulleObjCUTF8StreamReader *self);
 
 //
@@ -58,7 +58,7 @@ long   __MulleObjCUTF8StreamReaderUnescapedNextUTF32Character( MulleObjCUTF8Stre
 // be the character behind it. It can not be a '/' as this would be the
 // comment. So this is easy, though inconvenient, to test against.
 //
-MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
+MULLE_OBJC_PLIST_FOUNDATION_GLOBAL
 long   MulleObjCUTF8StreamReaderSkipWhiteAndComments( MulleObjCUTF8StreamReader *_self);
 
 

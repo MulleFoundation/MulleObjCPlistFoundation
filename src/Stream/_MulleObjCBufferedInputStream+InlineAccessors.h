@@ -40,10 +40,10 @@
 
 
 // don't inline these and don't call'em yourself
-MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
+MULLE_OBJC_PLIST_FOUNDATION_GLOBAL
 int    MulleObjCBufferedInputStreamFillBufferAndNextCharacter( MulleObjCBufferedInputStream *self);
 
-MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
+MULLE_OBJC_PLIST_FOUNDATION_GLOBAL
 MulleObjCMemoryRegion   MulleObjCBufferedInputStreamBookmarkedRegion( MulleObjCBufferedInputStream *self);
 
 // keep as small as possible for inlining

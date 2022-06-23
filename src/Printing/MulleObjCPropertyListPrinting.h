@@ -58,15 +58,15 @@ struct MulleObjCPrintPlistContext
 };
 
 
-MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
+MULLE_OBJC_PLIST_FOUNDATION_GLOBAL
 void  MulleObjCPrintPlistContextInit( struct MulleObjCPrintPlistContext *ctxt,
                                       id <MulleObjCOutputStream> handle);
 
-MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
+MULLE_OBJC_PLIST_FOUNDATION_GLOBAL
 void  MulleObjCPrintPlistContextInit( struct MulleObjCPrintPlistContext *ctxt,
                                       id <MulleObjCOutputStream> handle);
 
-MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
+MULLE_OBJC_PLIST_FOUNDATION_GLOBAL
 void  MulleObjCPrintPlistContextSetHandle( struct MulleObjCPrintPlistContext *ctxt,
                                            id <MulleObjCOutputStream> handle);
 
@@ -103,17 +103,17 @@ PROTOCOLCLASS_END()
 
 
 // these helper methods produce indentation
-MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
+MULLE_OBJC_PLIST_FOUNDATION_GLOBAL
 MULLE_C_NONNULL_RETURN
 char   *MulleObjCPrintPlistContextUTF8Indentation( struct MulleObjCPrintPlistContext *ctxt);
 
-MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
+MULLE_OBJC_PLIST_FOUNDATION_GLOBAL
 MULLE_C_NONNULL_RETURN
 char   *_MulleObjCPrintPlistContextUTF8Indentation( NSUInteger indent,
                                                     NSUInteger indentPerLevel,
                                                     NSUInteger indentChar);
 
-MULLE_OBJC_PLIST_FOUNDATION_EXTERN_GLOBAL
+MULLE_OBJC_PLIST_FOUNDATION_GLOBAL
 void   MulleObjCPrintPlistContextWriteUTF8Indentation( struct MulleObjCPrintPlistContext *ctxt);
 
 //
