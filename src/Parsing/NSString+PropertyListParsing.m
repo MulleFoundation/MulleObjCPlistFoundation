@@ -51,11 +51,9 @@ NSString   *
    _MulleObjCNewStringParsedQuotedFromPropertyListWithReader( _MulleObjCPropertyListReader *reader)
 {
    long                    x;
-   size_t                  len;
    size_t                  escaped;
    MulleObjCMemoryRegion   region;
    NSMutableData           *data;
-   unsigned char           *src;
    char                    *dst;
    char                    *buf;
    NSString                *s;

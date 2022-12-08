@@ -64,12 +64,6 @@
 id   _MulleObjCNewObjectParsedUnquotedFromPropertyListWithReader( _MulleObjCPropertyListReader *reader)
 {
    MulleObjCMemoryRegion  region;
-   char                   buf[ 32];
-   char                   *end;
-   int                    type;
-   long long              ll_val;
-   double                 d_val;
-   NSString               *s;
    NSNumber               *nr;
 
    _MulleObjCPropertyListReaderBookmark( reader);
@@ -114,9 +108,7 @@ id   _MulleObjCNewObjectParsedUnquotedFromPropertyListWithReader( _MulleObjCProp
 id   _MulleObjCNewFromPropertyListWithStreamReader( _MulleObjCPropertyListReader *reader)
 {
    long   x;
-   long   y;
    id     plist;
-   id     tofree;
    BOOL   missingSlash;
    BOOL   isLeaf;
 

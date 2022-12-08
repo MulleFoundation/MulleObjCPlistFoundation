@@ -149,7 +149,6 @@ long   __MulleObjCUTF8StreamReaderComposeUTF32Character( MulleObjCUTF8StreamRead
    int    n;
    long   value;
    int    c;
-   int    len;
 
    if( x < 0xC2) // invalid at start
       return( 0xFFFD);

@@ -160,7 +160,6 @@ void   MulleStringWriteToStreamUsingEncoding( NSString *self,
                                               NSStringEncoding encoding)
 {
    NSData                    *data;
-   struct mulle_utf8data    utf8data;
    struct mulle_utf16data   utf16data;
    struct mulle_utf32data   utf32data;
    struct mulle_asciidata   asciidata;

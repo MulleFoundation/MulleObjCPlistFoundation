@@ -68,7 +68,6 @@
    mulle_utf8_t             *q, *sentinel;
    size_t                   len;
    size_t                   size;
-   NSMutableData            *target;
    struct mulle_utf8data    data;
    mulle_utf8_t             tmp1[ 32];
    mulle_utf8_t             tmp2[ 64];

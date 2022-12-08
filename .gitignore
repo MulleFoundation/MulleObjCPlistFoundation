@@ -59,3 +59,5 @@ tmp.*/
 public-classes.txt
 .mulle-make-build-dir
 version.old
+cmake-build-*/
+.ackrc

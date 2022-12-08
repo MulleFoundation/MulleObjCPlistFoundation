@@ -234,10 +234,9 @@ static struct
             mutabilityOption:(NSPropertyListMutabilityOptions) opt
                       format:(NSPropertyListFormat) format
 {
-   int                    i;
-   NSPropertyListFormat   format;
-   id                     plist;
-   id                     parser;
+   int   i;
+   id    plist;
+   id    parser;
 
    plist = nil;
 
@@ -282,13 +281,12 @@ NSString   *MulleStringFromPropertListFormatString( NSPropertyListFormat format)
                           format:(NSPropertyListFormat *) p_format
                     formatOption:(enum MullePropertyListFormatOption) formatOption
 {
-   _MulleObjCByteOrderMark       bom;
-   id                            plist;
-   NSPropertyListSerialization   *parser;
-   NSPropertyListFormat          dummy;
-   NSPropertyListFormat          requestedFormat;
-   NSPropertyListFormat          detectedFormat;
-   NSPropertyListFormat          usedFormat;
+   _MulleObjCByteOrderMark   bom;
+   id                        plist;
+   NSPropertyListFormat      dummy;
+   NSPropertyListFormat      requestedFormat;
+   NSPropertyListFormat      detectedFormat;
+   NSPropertyListFormat      usedFormat;
 
    if( ! p_format)
    {
@@ -449,8 +447,6 @@ NSString   *MulleStringFromPropertListFormatString( NSPropertyListFormat format)
    _MulleObjCPropertyListReader   *reader;
    MulleObjCBufferedInputStream   *stream;
    id                             plist;
-   NSPropertyListSerialization    *parser;
-   NSString                       *dummy;
 
    stream = [[[MulleObjCBufferedInputStream alloc] initWithData:data] autorelease];
    reader = [[[_MulleObjCPropertyListReader alloc] initWithBufferedInputStream:stream] autorelease];
@@ -473,8 +469,6 @@ NSString   *MulleStringFromPropertListFormatString( NSPropertyListFormat format)
    _MulleObjCPropertyListReader   *reader;
    MulleObjCBufferedInputStream   *stream;
    id                             plist;
-   NSPropertyListSerialization    *parser;
-   NSString                       *dummy;
 
    stream = [[[MulleObjCBufferedInputStream alloc] initWithData:data] autorelease];
    reader = [[[_MulleObjCPropertyListReader alloc] initWithBufferedInputStream:stream] autorelease];
@@ -498,8 +492,6 @@ NSString   *MulleStringFromPropertListFormatString( NSPropertyListFormat format)
    _MulleObjCPropertyListReader   *reader;
    MulleObjCBufferedInputStream   *stream;
    id                             plist;
-   NSPropertyListSerialization    *parser;
-   NSString                       *dummy;
 
    stream = [[[MulleObjCBufferedInputStream alloc] initWithData:data] autorelease];
    reader = [[[_MulleObjCPropertyListReader alloc] initWithBufferedInputStream:stream] autorelease];
