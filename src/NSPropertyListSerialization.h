@@ -58,7 +58,7 @@ typedef enum
 enum
 {
    NSPropertyListOpenStepFormat      = 1,   // no comments, no unquoted $ _ /
-   MullePropertyListLooseFormat = 2,   // with wily Mulle extensions
+   MullePropertyListLooseFormat      = 2,   // with wily Mulle extensions
    MullePropertyListPBXFormat        = 3,   // with wily Apple extensions
 //    MullePropertyListGNUstepFormat        = 4, // future
 //    MullePropertyListFormat               = 5, // future

@@ -1,0 +1,12 @@
+PropertyLists are a human readable representation of some data. The classic
+Objective-C format is the [plist](//en.wikipedia.org/wiki/Property_list),
+which looks like this:
+
+``` sh
+{
+	key = "string value";
+}
+```
+
+
+

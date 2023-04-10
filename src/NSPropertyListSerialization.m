@@ -246,6 +246,7 @@ static struct
       // fprintf( stderr, "%ld vs %ld\n", Self._parsor[ i].format, format);
       if( Self._parsor[ i].format != format)
          continue;
+
       // default doesn't create a separate parse instance so we
       // use the +method, but for subclasses we create an instance
       // so it can keep state
@@ -254,9 +255,13 @@ static struct
          parser = [[Self._parsor[ i].cls new] autorelease];
 
       plist = MulleObjCObjectPerformSelector( parser, Self._parsor[ i].method, data);
-      break;
+      return( plist);
    }
-   return( plist);
+
+   [NSException raise:NSInvalidArgumentException
+               format:@"No installed parser for plist format \"%@\"",
+                     MulleStringFromPropertListFormatString( format)];
+   return( nil);
 }
 
 

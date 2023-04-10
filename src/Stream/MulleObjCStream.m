@@ -178,7 +178,7 @@ void   MulleStringWriteToStreamUsingEncoding( NSString *self,
                           length:asciidata.length];
          return;
       }
-      data = [self _asciiData];
+      data = [self _asciiDataWithEncodingOptions:0];
       if( ! data)
          MulleObjCThrowInvalidArgumentExceptionUTF8String( "Can not convert this string to ASCII");
       break;
@@ -195,19 +195,16 @@ void   MulleStringWriteToStreamUsingEncoding( NSString *self,
          return;
       }
       data = [self _utf16DataWithEndianness:native_end_first
-                              prefixWithBOM:NO
-                          terminateWithZero:NO];
+                            encodingOptions:0];
       break;
 
    case NSUTF16LittleEndianStringEncoding :
       data = [self _utf16DataWithEndianness:little_end_first
-                              prefixWithBOM:NO
-                          terminateWithZero:NO];
+                            encodingOptions:0];
       break;
    case NSUTF16BigEndianStringEncoding :
       data = [self _utf16DataWithEndianness:big_end_first
-                              prefixWithBOM:NO
-                          terminateWithZero:NO];
+                            encodingOptions:0];
       break;
 
    case NSUTF32StringEncoding :
@@ -218,18 +215,15 @@ void   MulleStringWriteToStreamUsingEncoding( NSString *self,
          return;
       }
       data = [self _utf32DataWithEndianness:native_end_first
-                              prefixWithBOM:NO
-                          terminateWithZero:NO];
+                            encodingOptions:0];
       break;
    case NSUTF32LittleEndianStringEncoding :
       data = [self _utf32DataWithEndianness:little_end_first
-                              prefixWithBOM:NO
-                          terminateWithZero:NO];
+                            encodingOptions:0];
       break;
    case NSUTF32BigEndianStringEncoding :
       data = [self _utf32DataWithEndianness:big_end_first
-                              prefixWithBOM:NO
-                          terminateWithZero:NO];
+                            encodingOptions:0];
       break;
    }
    [handle writeData:data];

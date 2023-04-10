@@ -1,0 +1,10 @@
+## Info
+
+This library supports "plist". Add [MulleObjCJSMNFoundation](//github.com/MulleWeb/MulleObjCJSMNFoundation) for JSON
+or [MulleObjCExpatFoundation](//github.com/MulleFoundation/MulleObjCExpatFoundation) for XML.
+
+Though the MulleObjCPlistFoundation is "below" MulleObjCOSFoundation, you
+will likely need the MulleObjCOSFoundation for printing NSDates as it contains
+the NSDateFormatter subclasses.
+
+
