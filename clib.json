@@ -1,6 +1,6 @@
 {
    "name" : "MulleObjCPlistFoundation",
-   "version" : "0.20.2",
+   "version" : "0.20.3",
    "description" : "PropertyList parsing and printing",
    "keywords" : [],
    "license" : "BSD-3-Clause",
@@ -43,7 +43,6 @@
       "src/Printing/NSNumber+PropertyListPrinting.m",
       "src/Printing/NSString+PropertyListPrinting.h",
       "src/Printing/NSString+PropertyListPrinting.m",
-      "src/reflect/objc-loader.inc",
       "src/reflect/_MulleObjCPlistFoundation-export.h",
       "src/reflect/_MulleObjCPlistFoundation-import-private.h",
       "src/reflect/_MulleObjCPlistFoundation-import.h",
