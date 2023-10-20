@@ -81,6 +81,8 @@ Install the requirements:
 | [MulleObjCStandardFoundation](https://github.com/MulleFoundation/MulleObjCStandardFoundation)             | 🚤 Objective-C classes based on the C standard library
 | [mulle-objc-list](https://github.com/mulle-objc/mulle-objc-list)             | 📒 Lists mulle-objc runtime information contained in executables.
 
+Download the latest [tar](https://github.com/MulleFoundation/MulleObjCPlistFoundation/archive/refs/tags/latest.tar.gz) or [zip](https://github.com/MulleFoundation/MulleObjCPlistFoundation/archive/refs/tags/latest.zip) archive and unpack it.
+
 Install **MulleObjCPlistFoundation** into `/usr/local` with [cmake](https://cmake.org):
 
 ``` sh
