@@ -82,5 +82,6 @@ src/Stream/_MulleObjCPropertyListReader.h
 src/Stream/MulleObjCStream.h
 src/Stream/_MulleObjCUTF8StreamReader+InlineAccessors.h
 src/Stream/MulleObjCUTF8StreamReader.h
+src/reflect/_MulleObjCPlistFoundation-versioncheck.h
 )
 

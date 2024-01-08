@@ -1,7 +1,7 @@
 {
    "name" : "MulleObjCPlistFoundation",
-   "version" : "0.20.3",
-   "description" : "PropertyList parsing and printing",
+   "version" : "0.20.4",
+   "description" : "🏢 PropertyList parsing and printing",
    "keywords" : [],
    "license" : "BSD-3-Clause",
    "repo" : "MulleFoundation/MulleObjCPlistFoundation",
@@ -49,6 +49,7 @@
       "src/reflect/_MulleObjCPlistFoundation-import.h",
       "src/reflect/_MulleObjCPlistFoundation-include-private.h",
       "src/reflect/_MulleObjCPlistFoundation-include.h",
+      "src/reflect/_MulleObjCPlistFoundation-versioncheck.h",
       "src/Stream/MulleObjCBufferedInputStream.h",
       "src/Stream/MulleObjCBufferedInputStream.m",
       "src/Stream/MulleObjCBufferedOutputStream.h",

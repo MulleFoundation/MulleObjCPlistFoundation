@@ -15,9 +15,10 @@ which looks like this:
 
 
 
+
 | Release Version                                       | Release Notes
 |-------------------------------------------------------|--------------
-| ![Mulle kybernetiK tag](https://img.shields.io/github/tag//MulleObjCPlistFoundation.svg?branch=release) [![Build Status](https://github.com//MulleObjCPlistFoundation/workflows/CI/badge.svg?branch=release)](//github.com//MulleObjCPlistFoundation/actions)| [RELEASENOTES](RELEASENOTES.md) |
+| ![Mulle kybernetiK tag](https://img.shields.io/github/tag/MulleFoundation/MulleObjCPlistFoundation.svg?branch=release) [![Build Status](https://github.com/MulleFoundation/MulleObjCPlistFoundation/workflows/CI/badge.svg?branch=release)](//github.com/MulleFoundation/MulleObjCPlistFoundation/actions) | [RELEASENOTES](RELEASENOTES.md) |
 
 
 ## API
@@ -96,6 +97,6 @@ cmake --install build --config Release
 
 ## Author
 
-[Nat!](https://mulle-kybernetik.com/weblog) for Mulle kybernetiK
+[Nat!](https://mulle-kybernetik.com/weblog) for Mulle kybernetiK  
 
 
