@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.1)
+cmake_minimum_required( VERSION 3.15)
 
 project( MulleObjCPlistFoundation VERSION 0.20.7 LANGUAGES C)
 

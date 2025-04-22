@@ -68,3 +68,6 @@ build-*
 coverage*.html
 *.gcda
 cola/wilted/
+CMakeLists.txt.bak
+.mulle/etc/make/build-dir
+vgcore.*
