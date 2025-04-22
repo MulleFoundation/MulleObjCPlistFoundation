@@ -11,12 +11,12 @@ endif()
 # contents are derived from the file locations
 
 set( INCLUDE_DIRS
+src/reflect
+src/generic
 src
 src/Parsing
 src/Printing
 src/Stream
-src/generic
-src/reflect
 )
 
 #
