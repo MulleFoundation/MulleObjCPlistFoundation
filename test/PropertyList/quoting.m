@@ -8,13 +8,20 @@
 #import <MulleObjCPlistFoundation/MulleObjCPlistFoundation.h>
 
 
+// interesting problem here: value is a NSDictionary with a NSNumber and
+// the printed representation. But the plist doesn't know about NSNumber
+// when parsing back in (maybe it should) so we get a string back
+
 static void  code_decode( id value)
 {
    NSData   *data;
    id       decoded;
+   NSString  *valueDesc;
+   NSString  *decodedDesc;
 
+   valueDesc = [value description];
    printf( "%s->",
-      [[value description] UTF8String]);
+      [valueDesc UTF8String]);
    fflush( stdout);
 
    @try
@@ -27,11 +34,12 @@ static void  code_decode( id value)
                                                            format:NULL
                                                  errorDescription:NULL];
 
-      if( ! [[value description] isEqualToString:[decoded description]])
+      decodedDesc = [decoded description];
+      if( ! [valueDesc isEqualToString:decodedDesc])
          printf( "*MISMATCH*");
 
       printf( "%s\n",
-         [[decoded description] UTF8String]);
+         [decodedDesc UTF8String]);
    }
    @catch( NSException *exception)
    {
@@ -41,9 +49,12 @@ static void  code_decode( id value)
 
 
 
-int main(int argc, const char * argv[])
+int   main(int argc, const char * argv[])
 {
    int   i;
+
+   for( i = 82; i <= 83; i++)
+      code_decode( @{ [NSNumber numberWithDouble:(double) i / 10]: [NSString stringWithFormat:@"%c", i] });
 
    for( i = 7; i <= 13; i++)
       code_decode( @{ [NSNumber numberWithDouble:(double) i / 10]: [NSString stringWithFormat:@"%c", i] });
