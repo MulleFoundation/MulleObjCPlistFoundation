@@ -29,16 +29,16 @@ static void  code_decode( id value)
       if( decoded)
       {
          description = [decoded description];
-         printf( "%s\n", [description UTF8String]);
+         mulle_printf( "%s\n", [description UTF8String]);
       }
       else
-         printf( "Error: %s\n",
+         mulle_printf( "Error: %s\n",
                   [[[NSError mulleExtract] description] UTF8String]);
 
    }
    @catch( NSException *exception)
    {
-      printf( "exception: %s\n", [[exception reason] UTF8String]);
+      mulle_printf( "exception: %s\n", [[exception reason] UTF8String]);
    }
 }
 

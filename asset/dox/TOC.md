@@ -1,4 +1,5 @@
 # MulleObjCPlistFoundation Library Documentation for AI
+<!-- Keywords: plist, serialization -->
 
 ## 1. Introduction & Purpose
 

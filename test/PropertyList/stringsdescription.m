@@ -17,7 +17,7 @@ static void  print_strings( NSDictionary *strings)
    NSString   *s;
 
    s = [strings descriptionInStringsFileFormat];
-   printf( ">%s<\n", s ? [s UTF8String] : "nil");
+   mulle_printf( ">%s<\n", s ? [s UTF8String] : "nil");
 }
 
 

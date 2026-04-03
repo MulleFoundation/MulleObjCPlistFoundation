@@ -56,7 +56,7 @@ src/generic/include.h
 # contents selected with patternfile ??-header--public-headers
 #
 set( PUBLIC_HEADERS
-src/MulleObjCLoader+MulleObjCPlistFoundation.h
+src/MulleObjCDeps+MulleObjCPlistFoundation.h
 src/MulleObjCPlistFoundation.h
 src/NSDictionary+PropertyList.h
 src/NSPropertyListSerialization.h

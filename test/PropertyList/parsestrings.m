@@ -28,7 +28,7 @@ static void  parse_strings( NSDictionary *dict, BOOL expect)
                                                        format:&format
                                                         error:NULL];
 
-   printf( "%s\n", [dict isEqual:check] == expect ? "PASS" : "FAIL");
+   mulle_printf( "%s\n", [dict isEqual:check] == expect ? "PASS" : "FAIL");
    if( [dict isEqual:check] != expect)
    {
       mulle_fprintf( stderr, "s: %@\n", s);

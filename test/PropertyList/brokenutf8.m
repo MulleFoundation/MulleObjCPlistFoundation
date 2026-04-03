@@ -22,7 +22,7 @@ static void  code_decode( id value)
                                                  mutabilityOption:0
                                                            format:NULL
                                                  errorDescription:NULL];
-      printf( "->\"%s\" = %s (%.*s :: %s)\n",
+      mulle_printf( "->\"%s\" = %s (%.*s :: %s)\n",
                [decoded UTF8String],
                [value isEqualToString:decoded] ? "SAME" : "DIFFERENT",
                (int) [data length], (char *) [data bytes],
@@ -30,7 +30,7 @@ static void  code_decode( id value)
    }
    @catch( NSException *exception)
    {
-      printf( "exception: %s\n", [[exception reason] UTF8String]);
+      mulle_printf( "exception: %s\n", [[exception reason] UTF8String]);
    }
 }
 
@@ -43,7 +43,7 @@ int main(int argc, const char * argv[])
 //                                          length:-1
 //                                        encoding:NSUTF8StringEncoding] autorelease];
 //
-//   printf( "\"%s\"", [s UTF8String]);
+//   mulle_printf( "\"%s\"", [s UTF8String]);
 //   fflush( stdout);
 //
 //   // real life strangeness :)
@@ -55,7 +55,7 @@ int main(int argc, const char * argv[])
                                  length:-1
                                encoding:NSUTF8StringEncoding] autorelease];
 
-   printf( "%s", [[s mulleQuotedString] UTF8String]);
+   mulle_printf( "%s", [[s mulleQuotedString] UTF8String]);
    fflush( stdout);
    code_decode( s);
 
@@ -65,7 +65,7 @@ int main(int argc, const char * argv[])
 //                                 length:-1
 //                               encoding:NSUTF8StringEncoding] autorelease];
 //
-//   printf( "\"%s\"", [s UTF8String]);
+//   mulle_printf( "\"%s\"", [s UTF8String]);
 //   fflush( stdout);
 //   code_decode( s);
 

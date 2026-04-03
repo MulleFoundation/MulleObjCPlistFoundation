@@ -10,7 +10,7 @@
 - (void) mulleWriteBytes:(void *) bytes
                   length:(NSUInteger) length
 {
-   printf( "%.*s", (int) length, (char *) bytes);
+   mulle_printf( "%.*s", (int) length, (char *) bytes);
 }
 
 @end

@@ -20,7 +20,7 @@ static void  code_decode( id value)
    NSString  *decodedDesc;
 
    valueDesc = [value description];
-   printf( "%s->",
+   mulle_printf( "%s->",
       [valueDesc UTF8String]);
    fflush( stdout);
 
@@ -36,14 +36,14 @@ static void  code_decode( id value)
 
       decodedDesc = [decoded description];
       if( ! [valueDesc isEqualToString:decodedDesc])
-         printf( "*MISMATCH*");
+         mulle_printf( "*MISMATCH*");
 
-      printf( "%s\n",
+      mulle_printf( "%s\n",
          [decodedDesc UTF8String]);
    }
    @catch( NSException *exception)
    {
-      printf( "exception: %s\n", [[exception reason] UTF8String]);
+      mulle_printf( "exception: %s\n", [[exception reason] UTF8String]);
    }
 }
 

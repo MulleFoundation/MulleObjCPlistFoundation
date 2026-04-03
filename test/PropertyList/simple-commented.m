@@ -23,13 +23,13 @@ static void  decode( NSString *s)
                                                                 format:&format
                                                           formatOption:MullePropertyListFormatOptionPrefer];
 
-      printf( "%s->%s\n\n",
+      mulle_printf( "%s->%s\n\n",
                  [[s description] UTF8String],
                  [[decoded description] UTF8String]);
    }
    @catch( NSException *exception)
    {
-      printf( "exception: %s\n", [[exception reason] UTF8String]);
+      mulle_printf( "exception: %s\n", [[exception reason] UTF8String]);
    }
 }
 

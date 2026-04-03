@@ -22,13 +22,13 @@ static void  code_decode( id value)
                                                  mutabilityOption:0
                                                            format:NULL
                                                  errorDescription:NULL];
-      printf( "%s->%s\n",
+      mulle_printf( "%s->%s\n",
             [[value description] UTF8String],
             [[decoded description] UTF8String]);
    }
    @catch( NSException *exception)
    {
-      printf( "exception: %s\n", [[exception reason] UTF8String]);
+      mulle_printf( "exception: %s\n", [[exception reason] UTF8String]);
    }
 }
 

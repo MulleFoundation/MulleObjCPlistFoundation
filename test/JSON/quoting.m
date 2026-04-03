@@ -14,7 +14,7 @@ static void  code_decode( id value)
    id                      decoded;
    NSPropertyListFormat    format;
 
-   printf( "%s->",
+   mulle_printf( "%s->",
       [[value description] UTF8String]);
    fflush( stdout);
 
@@ -23,11 +23,11 @@ static void  code_decode( id value)
       data = [NSPropertyListSerialization dataFromPropertyList:value
                                                         format:MullePropertyListJSONFormat
                                               errorDescription:NULL];
-      printf( "%.*s\n", (int) [data length], (char *) [data bytes]);
+      mulle_printf( "%.*s\n", (int) [data length], (char *) [data bytes]);
    }
    @catch( NSException *exception)
    {
-      printf( "exception: %s\n", [[exception reason] UTF8String]);
+      mulle_printf( "exception: %s\n", [[exception reason] UTF8String]);
    }
 }
 
