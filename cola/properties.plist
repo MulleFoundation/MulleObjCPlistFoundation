@@ -7,8 +7,9 @@
       user="MulleFoundation";
       repo="MulleObjCPlistFoundation";
       homepage="https://github.com/MulleFoundation/MulleObjCPlistFoundation";
-      license="BSD-3-Clause";
-   };
+       license="BSD-3-Clause";
+       version="0.21.0";
+    };
    dependencies =
    (
       {
