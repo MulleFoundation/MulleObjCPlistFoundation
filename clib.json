@@ -1,6 +1,6 @@
 {
    "name" : "MulleObjCPlistFoundation",
-   "version" : "0.20.9",
+   "version" : "0.21.0",
    "description" : "🏢 PropertyList parsing and printing",
    "keywords" : [],
    "license" : "BSD-3-Clause",
