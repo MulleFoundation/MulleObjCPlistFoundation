@@ -6,7 +6,6 @@
    "license" : "BSD-3-Clause",
    "repo" : "MulleFoundation/MulleObjCPlistFoundation",
    "src" : [
-      "asset/dox/TOC.md",
       "src/generic/import-private.h",
       "src/generic/import.h",
       "src/generic/include-private.h",

@@ -40,3 +40,9 @@ export MULLE_OBJC_EPHEMERAL_SINGLETON="YES"
 
 
 
+#
+#
+#
+export MULLE_SDE_CLEAN_DEFAULT="MulleObjCOSFoundation"
+
+
